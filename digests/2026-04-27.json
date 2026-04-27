@@ -1,42 +1,78 @@
 {
   "policy": {
-    "summary": "搜尋 政策法規 時發生錯誤",
+    "summary": "分析 政策法規 時發生錯誤: API 請求失敗: 404 Not Found - {\"type\":\"error\",\"error\":{\"type\":\"not_found_error\",\"message\":\"model: claude-sonnet-4-20250514\"},\"request_id\":\"req_011CaUGsyu4jcYHxhmRbbrPu\"}",
     "keyPoints": [
-      "無法取得資料"
+      "系統發生錯誤",
+      "請檢查 API 設定",
+      "或稍後再試"
     ],
     "questions": [
-      "系統發生錯誤"
+      "為什麼會發生錯誤?",
+      "API Key 是否正確?",
+      "網路連線是否正常?"
     ],
-    "sources": []
+    "sources": [
+      {
+        "name": "系統錯誤",
+        "url": "https://github.com/Angel-lin0210/search"
+      }
+    ]
   },
   "tech": {
-    "summary": "搜尋 技術發展 時發生錯誤",
+    "summary": "分析 技術發展 時發生錯誤: API 請求失敗: 404 Not Found - {\"type\":\"error\",\"error\":{\"type\":\"not_found_error\",\"message\":\"model: claude-sonnet-4-20250514\"},\"request_id\":\"req_011CaUGszGdy5vUiTLKHRCRd\"}",
     "keyPoints": [
-      "無法取得資料"
+      "系統發生錯誤",
+      "請檢查 API 設定",
+      "或稍後再試"
     ],
     "questions": [
-      "系統發生錯誤"
+      "為什麼會發生錯誤?",
+      "API Key 是否正確?",
+      "網路連線是否正常?"
     ],
-    "sources": []
+    "sources": [
+      {
+        "name": "系統錯誤",
+        "url": "https://github.com/Angel-lin0210/search"
+      }
+    ]
   },
   "business": {
-    "summary": "搜尋 商業模式 時發生錯誤",
+    "summary": "分析 商業模式 時發生錯誤: API 請求失敗: 404 Not Found - {\"type\":\"error\",\"error\":{\"type\":\"not_found_error\",\"message\":\"model: claude-sonnet-4-20250514\"},\"request_id\":\"req_011CaUGszaVHDTHRdUBr3vVq\"}",
     "keyPoints": [
-      "無法取得資料"
+      "系統發生錯誤",
+      "請檢查 API 設定",
+      "或稍後再試"
     ],
     "questions": [
-      "系統發生錯誤"
+      "為什麼會發生錯誤?",
+      "API Key 是否正確?",
+      "網路連線是否正常?"
     ],
-    "sources": []
+    "sources": [
+      {
+        "name": "系統錯誤",
+        "url": "https://github.com/Angel-lin0210/search"
+      }
+    ]
   },
   "ux": {
-    "summary": "搜尋 使用者體驗 時發生錯誤",
+    "summary": "分析 使用者體驗 時發生錯誤: API 請求失敗: 404 Not Found - {\"type\":\"error\",\"error\":{\"type\":\"not_found_error\",\"message\":\"model: claude-sonnet-4-20250514\"},\"request_id\":\"req_011CaUGszz3c79DykvpzVWC9\"}",
     "keyPoints": [
-      "無法取得資料"
+      "系統發生錯誤",
+      "請檢查 API 設定",
+      "或稍後再試"
     ],
     "questions": [
-      "系統發生錯誤"
+      "為什麼會發生錯誤?",
+      "API Key 是否正確?",
+      "網路連線是否正常?"
     ],
-    "sources": []
+    "sources": [
+      {
+        "name": "系統錯誤",
+        "url": "https://github.com/Angel-lin0210/search"
+      }
+    ]
   }
 }
