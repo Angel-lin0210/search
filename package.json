@@ -1,0 +1,16 @@
+{
+  "name": "ev-daily-digest",
+  "version": "1.0.0",
+  "description": "電動車生態每日觀察自動化系統",
+  "main": "fetch-digest.js",
+  "scripts": {
+    "fetch": "node fetch-digest.js",
+    "start": "node fetch-digest.js"
+  },
+  "keywords": ["ev", "electric-vehicle", "automation"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@sendgrid/mail": "^7.7.0"
+  }
+}
