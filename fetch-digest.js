@@ -8,87 +8,87 @@ const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
 function getMockDigestData() {
     return {
         "policy": {
-            "summary": "台灣政府宣布擴大電動車購車補助,同時放寬社區管委會設置充電樁的相關法規限制,預計2026年底前完成全台公寓大廈充電設施設置指引修訂。",
+            "summary": "台灣政府宣布擴大電動車購車補助,同時放寬社區管委會設置充電樁的相關法規限制。網友在 PTT 和 Mobile01 熱烈討論,多數認為補助延長是好事,但也擔心舊公寓電力系統能否負荷。",
             "keyPoints": [
                 "經濟部宣布電動車購車補助延長至2027年,最高補助金額提升至8萬元",
                 "內政部修正公寓大廈管理條例施行細則,簡化充電樁設置申請程序",
-                "台電推出社區專案,協助管委會評估電力系統升級需求",
-                "環保署公布新版電動車碳足跡計算標準,納入充電來源碳排",
-                "六都陸續公告充電專用停車位設置比例,新建案須達10%以上"
+                "PTT Car 板網友計算:新政策下 Model 3 實際購車成本可降至 140 萬",
+                "Mobile01 討論區出現多篇「管委會充電樁安裝經驗分享」,點閱破萬",
+                "Dcard 有住戶分享成功說服管委會同意設置的完整流程"
             ],
             "questions": [
                 "購車補助延長是否會影響二手電動車市場價格穩定性?",
-                "簡化申請程序後,舊公寓大廈的電力系統是否足以負荷多戶充電需求?",
+                "網友分享的管委會溝通技巧,哪些最有效?",
                 "如何平衡管委會決策效率與住戶充電權益保障?",
-                "碳足跡標準改變是否會影響企業採購電動車的意願?",
+                "社群上反對充電樁的主要論點有哪些?如何回應?",
                 "充電專用車位比例提高,對現有停車空間不足的社區影響為何?"
             ],
             "sources": [
                 {"title": "經濟部電動車補助方案", "url": "https://www.moea.gov.tw"},
-                {"title": "內政部公寓大廈管理修正案", "url": "https://www.moi.gov.tw"}
+                {"title": "PTT Car 板補助討論串", "url": "https://www.ptt.cc/bbs/car"}
             ]
         },
         "tech": {
-            "summary": "快充技術突破800kW功率門檻,充電5分鐘可行駛400公里。同時智慧EMS系統開始整合AI預測,可根據電價波動自動調整充電策略,平均節省30%充電成本。",
+            "summary": "快充技術突破800kW功率門檻,Tesla 車主在 Facebook 社團分享 V4 超充實測,5 分鐘充到 60%。YouTube 汽車頻道「電動生活」實測影片觀看數破 50 萬,網友熱議充電速度已接近加油體驗。",
             "keyPoints": [
-                "中國寧德時代發表第二代神行超充電池,支援6C充電倍率",
-                "特斯拉V4超充樁開始在歐洲部署,最高功率達350kW",
-                "台達電推出雙向充電樁,支援Vehicle-to-Grid (V2G) 功能",
-                "EMS系統整合OpenAI技術,可預測用戶行為優化充電時段",
-                "固態電池商業化時程提前,豐田宣布2027年量產計畫"
+                "中國寧德時代發表第二代神行超充電池,技術細節在知乎引發熱議",
+                "特斯拉車主 Facebook 社團分享 V4 超充樁實測數據,充電曲線完整記錄",
+                "YouTube 頻道「電動生活」實測台達電雙向充電樁,留言區討論 V2G 應用場景",
+                "Mobile01 網友分析:固態電池若 2027 量產,現在買電動車是否太早?",
+                "Twitter/X 上日本工程師分享 AI 優化充電演算法開源專案,獲 2000+ 星標"
             ],
             "questions": [
-                "超高功率快充對電池壽命的長期影響需要多久才能驗證?",
-                "V2G技術普及後,電網穩定性管理需要哪些配套措施?",
-                "AI優化充電策略是否會因為過度依賴演算法而產生新的風險?",
-                "固態電池成本下降速度能否跟上市場期待?",
-                "充電技術標準碎片化問題如何解決?"
+                "超高功率快充對電池壽命的長期影響,車主實測數據如何?",
+                "社群上分享的 V2G 實際使用案例有哪些?節省多少電費?",
+                "網友對 AI 優化充電的疑慮(隱私、演算法透明度)如何解決?",
+                "YouTube 實測影片中未揭露的充電技術細節有哪些?",
+                "固態電池討論熱度這麼高,一般消費者該如何判斷購車時機?"
             ],
             "sources": [
-                {"title": "寧德時代技術發表", "url": "https://www.catl.com"},
-                {"title": "台達電V2G方案", "url": "https://www.delta.com.tw"}
+                {"title": "Tesla 車主社團實測文", "url": "https://www.facebook.com/groups/tesla"},
+                {"title": "電動生活 YouTube 頻道", "url": "https://www.youtube.com"}
             ]
         },
         "business": {
-            "summary": "充電營運商開始推出訂閱制服務,月費299元無限充電模式在都會區獲得好評。同時停車場業者與充電樁廠商合作,推出「停車+充電」整合方案,改變傳統營運模式。",
+            "summary": "充電營運商推出訂閱制無限充電,在 Dcard 和 Instagram 引發討論。網紅「電動邦」開箱體驗影片點閱破百萬,但留言區有用戶反映尖峰時段等待時間過長問題。",
             "keyPoints": [
-                "Gogoro Network宣布跨入四輪電動車充電市場,利用現有換電站網路",
-                "中油與全家便利商店合作,在全台500個據點設置快充站",
-                "裕隆集團推出「充電即服務」(CaaS) 平台,整合多家充電營運商",
-                "停車大樓改裝充電設施投資回收期縮短至3年",
-                "社區型慢充共享平台興起,鄰居間可互相分享充電樁"
+                "Gogoro Network 宣布跨入四輪電動車充電,Instagram 貼文互動數創紀錄",
+                "「充電即服務」平台在 PTT Tech_Job 板引發討論:商業模式是否可持續?",
+                "Threads 上出現多位用戶分享「停車+充電」整合方案使用心得",
+                "Facebook 電動車社團管理員整理「全台充電站評比」,按讚數破萬",
+                "Dcard 有網友爆料某充電站故障率高,業者緊急回應說明改善措施"
             ],
             "questions": [
-                "訂閱制無限充電模式是否會造成尖峰時段壅塞問題?",
-                "傳統加油站轉型充電站的最大障礙是什麼?",
-                "充電平台整合後,用戶資料隱私如何保護?",
-                "社區型共享充電的法律責任歸屬如何界定?",
-                "充電基礎建設投資熱潮是否有泡沫化風險?"
+                "訂閱制無限充電的用戶滿意度調查,社群反饋如何?",
+                "網紅推薦的充電服務是否有業配嫌疑?如何辨別?",
+                "社群上抱怨充電樁故障的案例,共同問題是什麼?",
+                "「停車+充電」方案的實際使用者,推薦度和痛點各是什麼?",
+                "充電平台整合後,用戶在社群上最常討論的使用問題?"
             ],
             "sources": [
-                {"title": "Gogoro擴展計畫", "url": "https://www.gogoro.com"},
-                {"title": "中油充電網路", "url": "https://www.cpc.com.tw"}
+                {"title": "Gogoro IG 官方貼文", "url": "https://www.instagram.com/gogoro"},
+                {"title": "PTT Tech_Job 板討論", "url": "https://www.ptt.cc/bbs/tech_job"}
             ]
         },
         "ux": {
-            "summary": "用戶最大痛點仍是「充電樁被油車佔用」,雖然各縣市開始執法取締,但成效有限。另外充電App介面複雜、需下載多個App的問題持續困擾車主。",
+            "summary": "「充電樁被油車佔用」持續是社群最熱議題,Instagram 限時動態和 Threads 每天都有車主抱怨。YouTuber「開箱哥」實測充電 App 整合平台,指出介面混亂、需下載多個 App 的問題,影片獲 10 萬次觀看。",
             "keyPoints": [
-                "調查顯示68%電動車主曾遇到充電車位被佔用情況",
-                "台北市開始使用AI辨識系統,自動開單取締佔用充電格的油車",
-                "充電App整合平台「一卡通充」上線,支援15家業者",
-                "冬季低溫導致充電速度下降30%,引發用戶抱怨",
-                "公共充電樁故障率仍高達12%,影響用戶信心"
+                "Twitter/X 上 #充電樁被佔 hashtag 累計超過 5000 則貼文,多為抱怨文",
+                "Mobile01 網友發起「充電樁佔用回報地圖」專案,已標記 300+ 個熱點",
+                "Instagram 汽車帳號「電動車日常」分享台北市 AI 辨識取締系統,按讚破 5 萬",
+                "Facebook 社團「電動車主互助會」每週整理充電樁故障清單,成員互相提醒",
+                "Dcard 出現「冬季充電速度實測」文章,網友分享各品牌車款數據對比"
             ],
             "questions": [
-                "如何從根本解決充電車位被佔用問題?單靠罰款是否足夠?",
-                "充電App整合後,各家業者利益如何平衡?",
-                "低溫影響充電效率的問題,有哪些技術解決方案?",
-                "充電樁維護責任應該由誰承擔?營運商還是場地方?",
-                "如何提升充電基礎設施的可靠度到接近加油站的水準?"
+                "社群上分享的「防止充電樁被佔」妙招,哪些真的有效?",
+                "充電 App 整合平台推出後,YouTuber 和使用者評價落差為何?",
+                "網友自製的「充電樁佔用地圖」,是否能推動官方改善?",
+                "社群熱議的「冬季充電慢」問題,各車廠回應了嗎?",
+                "Facebook 社團的故障樁回報機制,對提升維護效率有幫助嗎?"
             ],
             "sources": [
-                {"title": "電動車主滿意度調查", "url": "https://www.artc.org.tw"},
-                {"title": "台北市智慧執法系統", "url": "https://www.gov.taipei"}
+                {"title": "Mobile01 充電地圖專案", "url": "https://www.mobile01.com"},
+                {"title": "電動車主互助會 FB 社團", "url": "https://www.facebook.com/groups/evowners"}
             ]
         }
     };
@@ -147,11 +147,14 @@ function generateEmailHTML(data) {
             .questions h4 { color: #0066cc; margin-bottom: 10px; }
             .questions li { margin: 8px 0; color: #333; font-weight: 500; }
             .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; color: #999; font-size: 0.9rem; }
+            .sources { margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd; }
+            .sources h5 { font-size: 0.9rem; color: #888; margin-bottom: 8px; }
+            .sources a { display: inline-block; margin: 5px 10px 5px 0; padding: 4px 10px; background: #e8f4ff; border-radius: 4px; color: #0066cc; text-decoration: none; font-size: 0.85rem; }
         </style>
     </head>
     <body>
         <div class="container">
-            <div class="test-banner">⚠️ 這是測試版本 - 使用模擬資料</div>
+            <div class="test-banner">⚠️ 這是測試版本 - 使用模擬資料 (含社群討論範例)</div>
             <h1>⚡ 電動車生態每日觀察</h1>
             <p style="color: #999;">更新時間: ${new Date().toLocaleString('zh-TW')}</p>
     `;
@@ -190,12 +193,21 @@ function generateEmailHTML(data) {
             `;
         }
 
+        if (topicData.sources && topicData.sources.length > 0) {
+            html += `
+                <div class="sources">
+                    <h5>📌 資料來源</h5>
+                    ${topicData.sources.map(s => `<a href="${s.url}" target="_blank">${s.title}</a>`).join('')}
+                </div>
+            `;
+        }
+
         html += `</div>`;
     });
 
     html += `
             <div class="footer">
-                此為測試郵件,使用模擬資料 | 系統每日早上 6:00 執行
+                此為測試郵件,包含社群媒體討論範例 | 系統每日早上 6:00 執行
             </div>
         </div>
     </body>
@@ -220,12 +232,13 @@ async function saveToFile(data) {
 
 async function main() {
     try {
-        console.log('=== 開始執行測試版每日搜集 ===');
+        console.log('=== 開始執行測試版每日搜集 (含社群討論) ===');
         console.log('📝 使用模擬資料進行測試');
+        console.log('📱 已包含社群媒體討論範例');
         console.log('Email:', RECIPIENT_EMAIL);
         
         const digestData = getMockDigestData();
-        console.log('✅ 已生成測試資料');
+        console.log('✅ 已生成測試資料(含社群討論)');
         
         await saveToFile(digestData);
         console.log('✅ 已儲存檔案');
