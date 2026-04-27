@@ -122,7 +122,7 @@ async function analyzeTopicWithClaude(topic) {
             'anthropic-version': '2023-06-01'
         },
         body: JSON.stringify({
-            model: 'claude-sonnet-4-20250514',
+            model: 'claude-sonnet-3-5-20241022',
             max_tokens: 2048,
             messages: [{
                 role: 'user',
