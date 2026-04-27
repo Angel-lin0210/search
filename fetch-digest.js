@@ -8,75 +8,98 @@ const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
 async function fetchDailyDigest() {
     console.log('開始搜集每日資訊...');
     
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "x-api-key": ANTHROPIC_API_KEY,
-            "anthropic-version": "2023-06-01"
-        },
-        body: JSON.stringify({
-            model: "claude-sonnet-4-20250514",
-            max_tokens: 4000,
-            system: `你是專業的電動車產業分析師。請搜集最新的台灣及國際電動車相關資訊,包含:
-            - 電動車產業動態
-            - 管委會與充電設施相關法規
-            - EMS 能源管理系統
-            - 充電樁基礎建設
-            - 電價政策
+    if (!ANTHROPIC_API_KEY) {
+        throw new Error('ANTHROPIC_API_KEY 未設定');
+    }
 
-            請按照以下四個面向分類整理:
-            1. 政策法規變化
-            2. 技術發展趨勢
-            3. 商業模式創新
-            4. 使用者體驗問題
+    try {
+        const response = await fetch("https://api.anthropic.com/v1/messages", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "x-api-key": ANTHROPIC_API_KEY,
+                "anthropic-version": "2023-06-01"
+            },
+            body: JSON.stringify({
+                model: "claude-sonnet-4-20250514",
+                max_tokens: 4000,
+                system: `你是專業的電動車產業分析師。請搜集最新的台灣及國際電動車相關資訊,包含:
+                - 電動車產業動態
+                - 管委會與充電設施相關法規
+                - EMS 能源管理系統
+                - 充電樁基礎建設
+                - 電價政策
 
-            針對每個面向,提供:
-            - 簡潔摘要(100字內)
-            - 3-5個關鍵重點
-            - 3-5個可延伸討論的深度問題
+                請按照以下四個面向分類整理:
+                1. 政策法規變化
+                2. 技術發展趨勢
+                3. 商業模式創新
+                4. 使用者體驗問題
 
-            **請以純 JSON 格式回應,不要包含任何其他文字或 Markdown 標記**,格式如下:
-            {
-              "policy": {
-                "summary": "...",
-                "keyPoints": ["...", "..."],
-                "questions": ["...", "..."],
-                "sources": [{"title": "...", "url": "..."}]
-              },
-              "tech": {...},
-              "business": {...},
-              "ux": {...}
-            }`,
-            messages: [
-                { 
-                    role: "user", 
-                    content: `請搜尋並整理今天(${new Date().toLocaleDateString('zh-TW')})關於電動車、管委會、EMS、充電樁、電價的最新資訊。` 
-                }
-            ],
-            tools: [
+                針對每個面向,提供:
+                - 簡潔摘要(100字內)
+                - 3-5個關鍵重點
+                - 3-5個可延伸討論的深度問題
+
+                **請以純 JSON 格式回應,不要包含任何其他文字或 Markdown 標記**,格式如下:
                 {
-                    "type": "web_search_20250305",
-                    "name": "web_search"
-                }
-            ]
-        })
-    });
+                  "policy": {
+                    "summary": "...",
+                    "keyPoints": ["...", "..."],
+                    "questions": ["...", "..."],
+                    "sources": [{"title": "...", "url": "..."}]
+                  },
+                  "tech": {...},
+                  "business": {...},
+                  "ux": {...}
+                }`,
+                messages: [
+                    { 
+                        role: "user", 
+                        content: `請搜尋並整理今天(${new Date().toLocaleDateString('zh-TW')})關於電動車、管委會、EMS、充電樁、電價的最新資訊。` 
+                    }
+                ],
+                tools: [
+                    {
+                        "type": "web_search_20250305",
+                        "name": "web_search"
+                    }
+                ]
+            })
+        });
 
-    const data = await response.json();
-    console.log('收到 API 回應');
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`API 請求失敗: ${response.status} - ${errorText}`);
+        }
 
-    const textContent = data.content
-        .filter(item => item.type === 'text')
-        .map(item => item.text)
-        .join('\n');
-    
-    const cleanJson = textContent
-        .replace(/```json\n?/g, '')
-        .replace(/```\n?/g, '')
-        .trim();
-    
-    return JSON.parse(cleanJson);
+        const data = await response.json();
+        console.log('收到 API 回應');
+
+        if (!data.content || !Array.isArray(data.content)) {
+            console.error('API 回應格式異常:', JSON.stringify(data, null, 2));
+            throw new Error('API 回應格式不正確');
+        }
+
+        const textContent = data.content
+            .filter(item => item.type === 'text')
+            .map(item => item.text)
+            .join('\n');
+        
+        if (!textContent) {
+            throw new Error('API 回應中沒有文字內容');
+        }
+
+        const cleanJson = textContent
+            .replace(/```json\n?/g, '')
+            .replace(/```\n?/g, '')
+            .trim();
+        
+        return JSON.parse(cleanJson);
+    } catch (error) {
+        console.error('搜集資訊失敗:', error);
+        throw error;
+    }
 }
 
 async function sendEmail(digestData) {
@@ -92,7 +115,7 @@ async function sendEmail(digestData) {
 
     const msg = {
         to: RECIPIENT_EMAIL,
-        from: RECIPIENT_EMAIL, // 必須是已驗證的 SendGrid sender
+        from: RECIPIENT_EMAIL,
         subject: `電動車生態每日觀察 - ${new Date().toLocaleDateString('zh-TW')}`,
         html: htmlContent
     };
@@ -203,12 +226,19 @@ async function saveToFile(data) {
 
 async function main() {
     try {
+        console.log('=== 開始執行每日搜集 ===');
+        console.log('API Key 已設定:', !!ANTHROPIC_API_KEY);
+        console.log('Email:', RECIPIENT_EMAIL);
+        
         const digestData = await fetchDailyDigest();
         await saveToFile(digestData);
         await sendEmail(digestData);
-        console.log('每日搜集完成!');
+        
+        console.log('=== 每日搜集完成! ===');
     } catch (error) {
-        console.error('執行失敗:', error);
+        console.error('=== 執行失敗 ===');
+        console.error('錯誤詳情:', error.message);
+        console.error('完整錯誤:', error);
         process.exit(1);
     }
 }
