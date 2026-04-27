@@ -5,51 +5,74 @@
       "name": "政策法規",
       "icon": "📋",
       "enabled": true,
-      "keywords": ["電動車政策", "購車補助", "充電樁法規", "電動車法規"]
+      "keywords": [
+        "電動車政策",
+        "購車補助",
+        "充電樁法規",
+        "電動車法規"
+      ]
     },
     {
       "id": "tech",
       "name": "技術發展",
       "icon": "🔬",
       "enabled": true,
-      "keywords": ["快充技術", "電池技術", "固態電池", "充電技術"]
+      "keywords": [
+        "快充技術",
+        "電池技術",
+        "固態電池",
+        "充電技術"
+      ]
     },
     {
       "id": "business",
       "name": "商業模式",
       "icon": "💼",
       "enabled": true,
-      "keywords": ["充電營運", "訂閱制", "商業模式", "充電站投資"]
+      "keywords": [
+        "充電營運",
+        "訂閱制",
+        "商業模式",
+        "充電站投資"
+      ]
     },
     {
       "id": "ux",
       "name": "使用者體驗",
       "icon": "👥",
       "enabled": true,
-      "keywords": ["充電樁佔用", "充電App", "使用者體驗", "車主經驗"]
+      "keywords": [
+        "充電樁佔用",
+        "充電App",
+        "使用者體驗",
+        "車主經驗"
+      ]
     }
   ],
   "customTopics": [
     {
-      "id": "custom-1",
-      "name": "固態電池專題",
-      "icon": "🔋",
-      "enabled": false,
-      "keywords": ["固態電池", "電池技術突破", "量產計畫"]
-    },
-    {
-      "id": "custom-2",
-      "name": "V2G雙向充電",
-      "icon": "⚡",
-      "enabled": false,
-      "keywords": ["V2G", "雙向充電", "電網整合"]
+      "id": "custom-1777290202594",
+      "name": "powerwall",
+      "icon": "⭐",
+      "enabled": true,
+      "keywords": [
+        "PW"
+      ]
     }
   ],
   "settings": {
-    "maxTopics": 6,
+    "maxTopics": 8,
     "socialMedia": {
       "enabled": true,
-      "platforms": ["PTT", "Mobile01", "Dcard", "YouTube", "Facebook", "Instagram", "Twitter"]
+      "platforms": [
+        "PTT",
+        "Mobile01",
+        "Dcard",
+        "YouTube",
+        "Facebook",
+        "Instagram",
+        "Twitter"
+      ]
     }
   }
 }
