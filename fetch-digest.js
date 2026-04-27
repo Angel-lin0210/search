@@ -9,12 +9,12 @@ const RECIPIENT_EMAIL = process.env.RECIPIENT_EMAIL || process.env.GMAIL_USER;
 const VERCEL_URL = 'search-six-rose.vercel.app';
 
 console.log('=== 環境變數檢查 ===');
-console.log('ANTHROPIC_API_KEY:', ANTHROPIC_API_KEY ? '已設定 ✅' : '未設定 ❌');
+console.log('ANTHROPIC_API_KEY:', ANTHROPIC_API_KEY ? `已設定 (${ANTHROPIC_API_KEY.substring(0, 10)}...)` : '未設定 ❌');
 console.log('GMAIL_USER:', GMAIL_USER ? '已設定 ✅' : '未設定 ❌');
 console.log('GMAIL_APP_PASSWORD:', GMAIL_APP_PASSWORD ? '已設定 ✅' : '未設定 ❌');
 console.log('RECIPIENT_EMAIL:', RECIPIENT_EMAIL);
 
-// 使用 Claude API 進行真實搜尋
+// 使用 Claude API 進行真實分析
 async function fetchRealDigestData() {
     if (!ANTHROPIC_API_KEY) {
         console.log('⚠️  未設定 ANTHROPIC_API_KEY，使用測試資料');
@@ -22,54 +22,66 @@ async function fetchRealDigestData() {
     }
 
     console.log('🔍 開始進行真實搜尋...');
+    console.log('');
 
     const topics = [
         {
             id: 'policy',
             name: '政策法規',
             icon: '📋',
-            searchQuery: '台灣電動車政策 購車補助 充電樁法規 最新消息 2026',
-            socialQuery: 'PTT Mobile01 Dcard 電動車補助 充電樁法規討論'
+            keywords: '台灣電動車政策 購車補助 充電樁法規 2026'
         },
         {
             id: 'tech',
             name: '技術發展',
             icon: '🔬',
-            searchQuery: '電動車技術 快充技術 固態電池 充電技術 最新突破 2026',
-            socialQuery: 'YouTube Facebook Instagram 電動車技術 充電技術 實測'
+            keywords: '電動車技術 快充技術 固態電池 充電技術 2026'
         },
         {
             id: 'business',
             name: '商業模式',
             icon: '💼',
-            searchQuery: '充電站營運 訂閱制 商業模式 充電服務 最新 2026',
-            socialQuery: 'PTT Dcard Threads 充電站 訂閱制 充電服務討論'
+            keywords: '充電站營運 訂閱制 商業模式 充電服務 2026'
         },
         {
             id: 'ux',
             name: '使用者體驗',
             icon: '👥',
-            searchQuery: '電動車使用體驗 充電樁問題 車主經驗 2026',
-            socialQuery: 'Mobile01 PTT Facebook 充電樁佔用 使用體驗 車主分享'
+            keywords: '電動車使用體驗 充電樁問題 車主經驗 2026'
         }
     ];
 
     const results = {};
 
     for (const topic of topics) {
-        console.log(`\n📊 搜尋主題: ${topic.name}`);
+        console.log(`📊 分析主題: ${topic.name}`);
         
         try {
-            const topicData = await searchTopicWithClaude(topic);
+            const topicData = await analyzeTopicWithClaude(topic);
             results[topic.id] = topicData;
-            console.log(`✅ ${topic.name} 搜尋完成`);
+            console.log(`✅ ${topic.name} 分析完成`);
+            console.log('');
         } catch (error) {
-            console.error(`❌ ${topic.name} 搜尋失敗:`, error.message);
+            console.error(`❌ ${topic.name} 分析失敗:`, error.message);
+            console.log('完整錯誤:', error);
+            console.log('');
+            
+            // 發生錯誤時使用備用資料
             results[topic.id] = {
-                summary: `搜尋 ${topic.name} 時發生錯誤`,
-                keyPoints: ['無法取得資料'],
-                questions: ['系統發生錯誤'],
-                sources: []
+                summary: `分析 ${topic.name} 時發生錯誤: ${error.message}`,
+                keyPoints: [
+                    '系統發生錯誤',
+                    '請檢查 API 設定',
+                    '或稍後再試'
+                ],
+                questions: [
+                    '為什麼會發生錯誤?',
+                    'API Key 是否正確?',
+                    '網路連線是否正常?'
+                ],
+                sources: [
+                    { name: '系統錯誤', url: 'https://github.com/Angel-lin0210/search' }
+                ]
             };
         }
     }
@@ -77,37 +89,31 @@ async function fetchRealDigestData() {
     return results;
 }
 
-async function searchTopicWithClaude(topic) {
-    const prompt = `你是電動車產業觀察專家。請搜尋並分析以下主題的最新動態:
+async function analyzeTopicWithClaude(topic) {
+    const prompt = `你是電動車產業觀察專家。請分析「${topic.name}」這個主題的重要趨勢。
 
-主題: ${topic.name}
-搜尋範圍: ${topic.searchQuery}
-社群媒體: ${topic.socialQuery}
+關鍵字: ${topic.keywords}
 
 請提供:
-1. 一段摘要 (80-120字，說明本主題的最新重要動態)
-2. 5個關鍵重點 (每個20-40字，包含具體數據或實例，特別注意社群媒體上的討論)
-3. 5個延伸討論問題 (基於社群媒體討論的深度問題)
-4. 3-5個資料來源 (包含標題和URL)
+1. 摘要 (100字內，說明重要趨勢)
+2. 5個關鍵重點 (每個30字內)
+3. 5個延伸討論問題
+4. 3個參考資料來源
 
-請以 JSON 格式回應:
+請用這個 JSON 格式回應,不要有任何其他文字:
 {
   "summary": "摘要內容",
   "keyPoints": ["重點1", "重點2", "重點3", "重點4", "重點5"],
   "questions": ["問題1", "問題2", "問題3", "問題4", "問題5"],
   "sources": [
-    {"name": "來源標題", "url": "https://..."},
-    ...
+    {"name": "來源1", "url": "https://example.com/1"},
+    {"name": "來源2", "url": "https://example.com/2"},
+    {"name": "來源3", "url": "https://example.com/3"}
   ]
-}
+}`;
 
-注意:
-- 優先引用台灣相關資訊
-- 包含 PTT、Mobile01、Dcard、YouTube、Facebook、Instagram 等社群平台的討論
-- 關鍵重點要有具體數據或實例
-- 延伸問題要反映社群上的真實疑慮和討論
-- 確保資料來源 URL 真實有效`;
-
+    console.log('  發送 API 請求...');
+    
     const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
@@ -117,43 +123,51 @@ async function searchTopicWithClaude(topic) {
         },
         body: JSON.stringify({
             model: 'claude-sonnet-4-20250514',
-            max_tokens: 4000,
+            max_tokens: 2048,
             messages: [{
                 role: 'user',
                 content: prompt
-            }],
-            tools: [{
-                type: "web_search_20250305",
-                name: "web_search"
             }]
         })
     });
 
+    console.log('  API 回應狀態:', response.status, response.statusText);
+
     if (!response.ok) {
-        throw new Error(`API 請求失敗: ${response.status} ${response.statusText}`);
+        const errorText = await response.text();
+        console.log('  錯誤內容:', errorText);
+        throw new Error(`API 請求失敗: ${response.status} ${response.statusText} - ${errorText}`);
     }
 
     const data = await response.json();
+    console.log('  解析回應...');
     
     // 解析 Claude 的回應
     let resultText = '';
-    for (const block of data.content) {
-        if (block.type === 'text') {
-            resultText += block.text;
+    if (data.content && Array.isArray(data.content)) {
+        for (const block of data.content) {
+            if (block.type === 'text') {
+                resultText += block.text;
+            }
         }
     }
+
+    console.log('  回應文字長度:', resultText.length);
 
     // 提取 JSON 部分
     const jsonMatch = resultText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-        throw new Error('無法解析 API 回應');
+        console.log('  無法找到 JSON,原始回應:', resultText.substring(0, 200));
+        throw new Error('無法解析 API 回應 JSON');
     }
 
     const result = JSON.parse(jsonMatch[0]);
+    console.log('  成功解析 JSON');
+    
     return result;
 }
 
-// 測試用的模擬資料 (當 API Key 未設定時使用)
+// 測試用的模擬資料
 function getMockDigestData() {
     return {
         "policy": {
@@ -172,15 +186,16 @@ function getMockDigestData() {
             ],
             "sources": [
                 { "name": "經濟部電動車補助方案", "url": "https://www.moea.gov.tw" },
-                { "name": "PTT Car 板補助討論串", "url": "https://www.ptt.cc/bbs/car" }
+                { "name": "PTT Car 板補助討論串", "url": "https://www.ptt.cc/bbs/car" },
+                { "name": "內政部法規修正公告", "url": "https://www.moi.gov.tw" }
             ]
         },
         "tech": {
             "summary": "快充技術突破800kW功率門檻,Tesla 車主在 Facebook 社團分享 V4 超充實測。",
             "keyPoints": [
-                "中國寧德時代發表第二代神行超充電池",
-                "特斯拉車主 Facebook 社團分享 V4 超充樁實測數據",
-                "YouTube 頻道「電動生活」實測台達電雙向充電樁"
+                "中國寧德時代發表第二代神行超充電池,支援5分鐘充電400公里",
+                "特斯拉車主 Facebook 社團分享 V4 超充樁實測數據:充電功率達250kW",
+                "YouTube 頻道「電動生活」實測台達電雙向充電樁,實現V2G功能"
             ],
             "questions": [
                 "超高功率快充對電池壽命的長期影響,車主實測數據如何?",
@@ -191,15 +206,16 @@ function getMockDigestData() {
             ],
             "sources": [
                 { "name": "Tesla 車主社團實測文", "url": "https://www.facebook.com/groups/tesla" },
-                { "name": "電動生活 YouTube 頻道", "url": "https://www.youtube.com" }
+                { "name": "電動生活 YouTube 頻道", "url": "https://www.youtube.com" },
+                { "name": "寧德時代技術發表", "url": "https://www.catl.com" }
             ]
         },
         "business": {
             "summary": "充電營運商推出訂閱制無限充電,在 Dcard 和 Instagram 引發討論。",
             "keyPoints": [
-                "Gogoro Network 宣布跨入四輪電動車充電",
-                "「充電即服務」平台在 PTT 引發討論",
-                "Threads 上出現多位用戶分享使用心得"
+                "Gogoro Network 宣布跨入四輪電動車充電,預計2026年建置1000座充電樁",
+                "「充電即服務」平台在 PTT 引發討論,月費999元無限充電方案評價兩極",
+                "Threads 上出現多位用戶分享訂閱制充電服務使用心得,滿意度約70%"
             ],
             "questions": [
                 "訂閱制無限充電的用戶滿意度調查,社群反饋如何?",
@@ -210,15 +226,16 @@ function getMockDigestData() {
             ],
             "sources": [
                 { "name": "Gogoro IG 官方貼文", "url": "https://www.instagram.com/gogoro" },
-                { "name": "PTT Tech_Job 板討論", "url": "https://www.ptt.cc/bbs/tech_job" }
+                { "name": "PTT Tech_Job 板討論", "url": "https://www.ptt.cc/bbs/tech_job" },
+                { "name": "Dcard 充電服務評價", "url": "https://www.dcard.tw" }
             ]
         },
         "ux": {
-            "summary": "「充電樁被油車佔用」持續是社群最熱議題。",
+            "summary": "「充電樁被油車佔用」持續是社群最熱議題,AI辨識系統開始試點。",
             "keyPoints": [
-                "Twitter/X 上 #充電樁被佔 累計超過 5000 則貼文",
-                "Mobile01 網友發起「充電樁佔用回報地圖」專案",
-                "Instagram 分享台北市 AI 辨識取締系統"
+                "Twitter/X 上 #充電樁被佔 累計超過 5000 則貼文,成為車主最大困擾",
+                "Mobile01 網友發起「充電樁佔用回報地圖」專案,已回報300+個案例",
+                "Instagram 分享台北市試點 AI 辨識取締系統,違停罰款3000元"
             ],
             "questions": [
                 "社群上分享的「防止充電樁被佔」妙招,哪些真的有效?",
@@ -229,7 +246,8 @@ function getMockDigestData() {
             ],
             "sources": [
                 { "name": "Mobile01 充電地圖專案", "url": "https://www.mobile01.com" },
-                { "name": "電動車主互助會 FB 社團", "url": "https://www.facebook.com/groups/evowners" }
+                { "name": "電動車主互助會 FB 社團", "url": "https://www.facebook.com/groups/evowners" },
+                { "name": "台北市交通局公告", "url": "https://www.dot.gov.taipei" }
             ]
         }
     };
@@ -267,15 +285,14 @@ async function sendEmailNotification(digestData) {
     textContent += `💼 商業模式\n${digestData.business.summary}\n\n`;
     textContent += `👥 使用者體驗\n${digestData.ux.summary}\n\n`;
 
-    // HTML 版本 - 白色簡潔風格
+    // HTML 版本
     const htmlContent = `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 </head>
-<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft JhengHei','Noto Sans TC',sans-serif;background-color:#f5f5f5;">
+<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft JhengHei',sans-serif;background-color:#f5f5f5;">
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f5f5;padding:20px 0;">
 <tr><td align="center">
 <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
@@ -297,18 +314,17 @@ ${['policy', 'tech', 'business', 'ux'].map(key => {
 <div style="background:#f8f9fa;padding:16px;border-radius:8px;border-left:3px solid #1a73e8;margin-bottom:12px;">
 <p style="margin:0;font-size:15px;color:#3c4043;line-height:1.7;">${topic.summary}</p>
 </div>
-<p style="margin:0 0 8px 0;font-size:13px;font-weight:600;color:#5f6368;text-transform:uppercase;">關鍵重點</p>
+<p style="margin:0 0 8px 0;font-size:13px;font-weight:600;color:#5f6368;">關鍵重點</p>
 ${topic.keyPoints.map(point => `<p style="margin:6px 0;padding-left:18px;position:relative;font-size:14px;color:#3c4043;line-height:1.6;"><span style="position:absolute;left:4px;color:#1a73e8;font-weight:bold;">•</span>${point}</p>`).join('')}
 </td></tr>
 </table>`;
 }).join('')}
 </td></tr>
 <tr><td style="padding:24px;background:#f8f9fa;text-align:center;">
-<a href="https://${VERCEL_URL}" style="display:inline-block;padding:14px 32px;background-color:#1a73e8;color:#ffffff;text-decoration:none;border-radius:8px;font-weight:600;font-size:15px;">📖 查看完整報告與延伸討論</a>
+<a href="https://${VERCEL_URL}" style="display:inline-block;padding:14px 32px;background-color:#1a73e8;color:#ffffff;text-decoration:none;border-radius:8px;font-weight:600;font-size:15px;">📖 查看完整報告</a>
 </td></tr>
 <tr><td style="padding:20px;text-align:center;color:#80868b;font-size:13px;background:#f8f9fa;border-top:1px solid #e8eaed;">
 <p style="margin:4px 0;">系統每日早上 6:00 自動執行</p>
-<p style="margin:4px 0;">電動車生態智能觀察系統</p>
 </td></tr>
 </table>
 </td></tr>
@@ -324,21 +340,14 @@ ${topic.keyPoints.map(point => `<p style="margin:6px 0;padding-left:18px;positio
         html: htmlContent
     };
 
-    console.log('📤 準備發送郵件...');
-    console.log('   收件者:', RECIPIENT_EMAIL);
+    console.log('📤 發送郵件...');
     
     try {
-        console.log('⏳ 發送中...');
         const info = await transporter.sendMail(mailOptions);
-        console.log('');
-        console.log('🎉 ✅ Email 通知發送成功!');
+        console.log('🎉 ✅ Email 發送成功!');
         console.log('   Message ID:', info.messageId);
-        console.log('');
     } catch (error) {
-        console.log('');
-        console.log('❌ Email 發送失敗');
-        console.log('   錯誤訊息:', error.message);
-        console.log('');
+        console.log('❌ Email 發送失敗:', error.message);
     }
 }
 
@@ -372,7 +381,6 @@ async function generateHTMLReport(data) {
             background: #f8f9fa;
             color: #2c3e50;
             line-height: 1.8;
-            font-size: 16px;
             padding: 20px;
         }
         .container { max-width: 900px; margin: 0 auto; }
@@ -450,7 +458,6 @@ async function generateHTMLReport(data) {
             margin-bottom: 12px;
             display: flex;
             gap: 12px;
-            align-items: flex-start;
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         }
         .question-number {
@@ -490,11 +497,9 @@ async function generateHTMLReport(data) {
             text-decoration: none;
             border-radius: 20px;
             font-size: 0.9rem;
-            transition: all 0.2s;
         }
         .source-link:hover {
             background: #e8f0fe;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
     </style>
 </head>
@@ -542,7 +547,7 @@ async function generateHTMLReport(data) {
 
     const htmlPath = path.join(__dirname, 'index.html');
     fs.writeFileSync(htmlPath, html, 'utf-8');
-    console.log('✅ 已生成完整 HTML 報告');
+    console.log('✅ 已生成 HTML 報告');
 }
 
 async function main() {
@@ -557,6 +562,7 @@ async function main() {
         await generateHTMLReport(digestData);
         await sendEmailNotification(digestData);
         
+        console.log('');
         console.log('=== 每日搜集完成! ===');
         console.log('');
     } catch (error) {
