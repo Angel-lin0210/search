@@ -3,7 +3,7 @@ const path = require('path');
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const LINE_NOTIFY_TOKEN = process.env.LINE_NOTIFY_TOKEN;
-const VERCEL_URL = 'search-evdailydigest.vercel.app';
+const VERCEL_URL = 'search-six-rose.vercel.app';
 
 // 測試用的模擬資料
 function getMockDigestData() {
