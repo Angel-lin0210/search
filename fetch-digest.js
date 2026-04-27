@@ -1,9 +1,18 @@
 const fs = require('fs');
 const path = require('path');
+const nodemailer = require('nodemailer');
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-const LINE_NOTIFY_TOKEN = process.env.LINE_NOTIFY_TOKEN;
+const GMAIL_USER = process.env.GMAIL_USER;
+const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
+const RECIPIENT_EMAIL = process.env.RECIPIENT_EMAIL || process.env.GMAIL_USER;
 const VERCEL_URL = 'search-six-rose.vercel.app';
+
+console.log('=== 環境變數檢查 ===');
+console.log('GMAIL_USER:', GMAIL_USER ? '已設定 ✅' : '未設定 ❌');
+console.log('GMAIL_APP_PASSWORD:', GMAIL_APP_PASSWORD ? '已設定 ✅' : '未設定 ❌');
+console.log('RECIPIENT_EMAIL:', RECIPIENT_EMAIL);
+console.log('VERCEL_URL:', VERCEL_URL);
 
 // 測試用的模擬資料
 function getMockDigestData() {
@@ -43,53 +52,237 @@ function getMockDigestData() {
     };
 }
 
-async function sendLineNotify(digestData) {
-    if (!LINE_NOTIFY_TOKEN) {
-        console.log('未設定 LINE_NOTIFY_TOKEN，跳過發送 LINE 通知');
+async function sendEmailNotification(digestData) {
+    console.log('');
+    console.log('=== 開始發送 Email 📧 ===');
+    
+    if (!GMAIL_USER || !GMAIL_APP_PASSWORD) {
+        console.log('❌ 無法發送 Email - 環境變數未設定');
+        console.log('   GMAIL_USER:', GMAIL_USER ? '已設定' : '未設定');
+        console.log('   GMAIL_APP_PASSWORD:', GMAIL_APP_PASSWORD ? '已設定' : '未設定');
         return;
     }
 
+    console.log('✅ 環境變數檢查通過');
+    
     const date = new Date().toLocaleDateString('zh-TW');
+    console.log('📅 報告日期:', date);
     
-    let message = `\n⚡ 電動車生態每日觀察\n`;
-    message += `📅 ${date}\n\n`;
-    
-    if (digestData.policy && digestData.policy.keyPoints) {
-        message += `📋 政策法規\n• ${digestData.policy.keyPoints[0]}\n\n`;
-    }
-    
-    if (digestData.tech && digestData.tech.keyPoints) {
-        message += `🔬 技術發展\n• ${digestData.tech.keyPoints[0]}\n\n`;
-    }
-    
-    if (digestData.business && digestData.business.keyPoints) {
-        message += `💼 商業模式\n• ${digestData.business.keyPoints[0]}\n\n`;
-    }
-    
-    if (digestData.ux && digestData.ux.keyPoints) {
-        message += `👥 使用者體驗\n• ${digestData.ux.keyPoints[0]}\n\n`;
-    }
-    
-    message += `👉 完整報告: https://${VERCEL_URL}`;
-
-    try {
-        const response = await fetch('https://notify-api.line.me/api/notify', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${LINE_NOTIFY_TOKEN}`,
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `message=${encodeURIComponent(message)}`
-        });
-
-        if (response.ok) {
-            console.log('✅ LINE 通知發送成功');
-        } else {
-            const errorText = await response.text();
-            console.error('❌ LINE 通知發送失敗:', errorText);
+    console.log('🔧 建立郵件傳送器...');
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: GMAIL_USER,
+            pass: GMAIL_APP_PASSWORD
         }
+    });
+
+    // 組合文字版本
+    let textContent = `電動車生態每日觀察\n`;
+    textContent += `${date}\n\n`;
+    textContent += `📋 政策法規\n${digestData.policy.summary}\n\n`;
+    textContent += `🔬 技術發展\n${digestData.tech.summary}\n\n`;
+    textContent += `💼 商業模式\n${digestData.business.summary}\n\n`;
+    textContent += `👥 使用者體驗\n${digestData.ux.summary}\n\n`;
+    textContent += `完整報告: https://${VERCEL_URL}`;
+
+    // 組合 HTML 版本
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: 'Microsoft JhengHei', 'Noto Sans TC', sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 30px;
+        }
+        .topic {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #eee;
+        }
+        .topic:last-child {
+            border-bottom: none;
+        }
+        .topic-title {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .topic-icon {
+            font-size: 1.5rem;
+        }
+        .summary {
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+        .points {
+            margin-top: 12px;
+        }
+        .point {
+            color: #666;
+            line-height: 1.6;
+            padding: 6px 0 6px 20px;
+            position: relative;
+        }
+        .point::before {
+            content: '•';
+            position: absolute;
+            left: 6px;
+            color: #667eea;
+            font-weight: bold;
+        }
+        .cta-button {
+            display: block;
+            width: fit-content;
+            margin: 30px auto;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-size: 0.9rem;
+            background: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ 電動車生態每日觀察</h1>
+            <p>📅 ${date}</p>
+        </div>
+        
+        <div class="content">
+            <div class="topic">
+                <div class="topic-title">
+                    <span class="topic-icon">📋</span>
+                    政策法規
+                </div>
+                <div class="summary">${digestData.policy.summary}</div>
+                <div class="points">
+                    ${digestData.policy.keyPoints.map(point => `<div class="point">${point}</div>`).join('')}
+                </div>
+            </div>
+            
+            <div class="topic">
+                <div class="topic-title">
+                    <span class="topic-icon">🔬</span>
+                    技術發展
+                </div>
+                <div class="summary">${digestData.tech.summary}</div>
+                <div class="points">
+                    ${digestData.tech.keyPoints.map(point => `<div class="point">${point}</div>`).join('')}
+                </div>
+            </div>
+            
+            <div class="topic">
+                <div class="topic-title">
+                    <span class="topic-icon">💼</span>
+                    商業模式
+                </div>
+                <div class="summary">${digestData.business.summary}</div>
+                <div class="points">
+                    ${digestData.business.keyPoints.map(point => `<div class="point">${point}</div>`).join('')}
+                </div>
+            </div>
+            
+            <div class="topic">
+                <div class="topic-title">
+                    <span class="topic-icon">👥</span>
+                    使用者體驗
+                </div>
+                <div class="summary">${digestData.ux.summary}</div>
+                <div class="points">
+                    ${digestData.ux.keyPoints.map(point => `<div class="point">${point}</div>`).join('')}
+                </div>
+            </div>
+            
+            <a href="https://${VERCEL_URL}" class="cta-button">
+                📖 查看完整報告
+            </a>
+        </div>
+        
+        <div class="footer">
+            系統每日早上 6:00 自動執行<br>
+            電動車生態智能觀察系統
+        </div>
+    </div>
+</body>
+</html>`;
+
+    const mailOptions = {
+        from: `"電動車每日觀察" <${GMAIL_USER}>`,
+        to: RECIPIENT_EMAIL,
+        subject: `⚡ 電動車生態每日觀察 - ${date}`,
+        text: textContent,
+        html: htmlContent
+    };
+
+    console.log('📤 準備發送郵件...');
+    console.log('   寄件者:', GMAIL_USER);
+    console.log('   收件者:', RECIPIENT_EMAIL);
+    console.log('   主旨:', mailOptions.subject);
+    
+    try {
+        console.log('⏳ 發送中...');
+        const info = await transporter.sendMail(mailOptions);
+        console.log('');
+        console.log('🎉 ✅ Email 通知發送成功!');
+        console.log('   Message ID:', info.messageId);
+        console.log('   Response:', info.response);
+        console.log('');
     } catch (error) {
-        console.error('❌ LINE 通知發送錯誤:', error);
+        console.log('');
+        console.log('❌ Email 發送失敗');
+        console.log('   錯誤類型:', error.name);
+        console.log('   錯誤訊息:', error.message);
+        if (error.code) {
+            console.log('   錯誤代碼:', error.code);
+        }
+        console.log('');
+        console.log('完整錯誤資訊:');
+        console.error(error);
+        console.log('');
     }
 }
 
@@ -241,20 +434,25 @@ async function generateHTMLReport(data) {
 
 async function main() {
     try {
+        console.log('');
         console.log('=== 開始執行每日搜集 ===');
         console.log('📝 使用測試資料');
+        console.log('');
         
         const digestData = getMockDigestData();
         console.log('✅ 已生成資料');
         
         await saveToFile(digestData);
         await generateHTMLReport(digestData);
-        await sendLineNotify(digestData);
+        await sendEmailNotification(digestData);
         
         console.log('=== 每日搜集完成! ===');
+        console.log('');
     } catch (error) {
-        console.error('=== 執行失敗 ===');
+        console.log('');
+        console.log('=== 執行失敗 ===');
         console.error('錯誤:', error);
+        console.log('');
         process.exit(1);
     }
 }
