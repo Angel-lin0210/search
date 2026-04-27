@@ -58,6 +58,17 @@
       "keywords": [
         "PW"
       ]
+    },
+    {
+      "id": "custom-1777290615169",
+      "name": "EMS",
+      "icon": "⭐",
+      "enabled": true,
+      "keywords": [
+        "社區",
+        "區大",
+        "管委會"
+      ]
     }
   ],
   "settings": {
