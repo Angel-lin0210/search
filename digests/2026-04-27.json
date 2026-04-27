@@ -1,0 +1,42 @@
+{
+  "policy": {
+    "summary": "搜尋 政策法規 時發生錯誤",
+    "keyPoints": [
+      "無法取得資料"
+    ],
+    "questions": [
+      "系統發生錯誤"
+    ],
+    "sources": []
+  },
+  "tech": {
+    "summary": "搜尋 技術發展 時發生錯誤",
+    "keyPoints": [
+      "無法取得資料"
+    ],
+    "questions": [
+      "系統發生錯誤"
+    ],
+    "sources": []
+  },
+  "business": {
+    "summary": "搜尋 商業模式 時發生錯誤",
+    "keyPoints": [
+      "無法取得資料"
+    ],
+    "questions": [
+      "系統發生錯誤"
+    ],
+    "sources": []
+  },
+  "ux": {
+    "summary": "搜尋 使用者體驗 時發生錯誤",
+    "keyPoints": [
+      "無法取得資料"
+    ],
+    "questions": [
+      "系統發生錯誤"
+    ],
+    "sources": []
+  }
+}
