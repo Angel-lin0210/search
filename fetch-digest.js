@@ -208,6 +208,66 @@ async function saveToFile(data) {
 async function generateHTMLReport(data) {
     const date = new Date().toLocaleDateString('zh-TW');
     
+    // 加入延伸問題和資料來源
+    const extendedData = {
+        policy: {
+            ...data.policy,
+            questions: [
+                "購車補助延長是否會影響二手電動車市場價格穩定性?",
+                "網友分享的管委會溝通技巧,哪些最有效?",
+                "如何平衡管委會決策效率與住戶充電權益保障?",
+                "社群上反對充電樁的主要論點有哪些?如何回應?",
+                "充電專用車位比例提高,對現有停車空間不足的社區影響為何?"
+            ],
+            sources: [
+                { name: "經濟部電動車補助方案", url: "https://www.moea.gov.tw" },
+                { name: "PTT Car 板補助討論串", url: "https://www.ptt.cc/bbs/car" }
+            ]
+        },
+        tech: {
+            ...data.tech,
+            questions: [
+                "超高功率快充對電池壽命的長期影響,車主實測數據如何?",
+                "社群上分享的 V2G 實際使用案例有哪些?節省多少電費?",
+                "網友對 AI 優化充電的疑慮(隱私、演算法透明度)如何解決?",
+                "YouTube 實測影片中未揭露的充電技術細節有哪些?",
+                "固態電池討論熱度這麼高,一般消費者該如何判斷購車時機?"
+            ],
+            sources: [
+                { name: "Tesla 車主社團實測文", url: "https://www.facebook.com/groups/tesla" },
+                { name: "電動生活 YouTube 頻道", url: "https://www.youtube.com" }
+            ]
+        },
+        business: {
+            ...data.business,
+            questions: [
+                "訂閱制無限充電的用戶滿意度調查,社群反饋如何?",
+                "網紅推薦的充電服務是否有業配嫌疑?如何辨別?",
+                "社群上抱怨充電樁故障的案例,共同問題是什麼?",
+                "「停車+充電」方案的實際使用者,推薦度和痛點各是什麼?",
+                "充電平台整合後,用戶在社群上最常討論的使用問題?"
+            ],
+            sources: [
+                { name: "Gogoro IG 官方貼文", url: "https://www.instagram.com/gogoro" },
+                { name: "PTT Tech_Job 板討論", url: "https://www.ptt.cc/bbs/tech_job" }
+            ]
+        },
+        ux: {
+            ...data.ux,
+            questions: [
+                "社群上分享的「防止充電樁被佔」妙招,哪些真的有效?",
+                "充電 App 整合平台推出後,YouTuber 和使用者評價落差為何?",
+                "網友自製的「充電樁佔用地圖」,是否能推動官方改善?",
+                "社群熱議的「冬季充電慢」問題,各車廠回應了嗎?",
+                "Facebook 社團的故障樁回報機制,對提升維護效率有幫助嗎?"
+            ],
+            sources: [
+                { name: "Mobile01 充電地圖專案", url: "https://www.mobile01.com" },
+                { name: "電動車主互助會 FB 社團", url: "https://www.facebook.com/groups/evowners" }
+            ]
+        }
+    };
+    
     const html = `<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -281,6 +341,77 @@ async function generateHTMLReport(data) {
             font-weight: bold;
             font-size: 1.2rem;
         }
+        .questions-section {
+            background: #e8f5e9;
+            padding: 24px;
+            border-radius: 12px;
+            margin-top: 24px;
+        }
+        .questions-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e7e34;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .question-item {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .question-item:last-child { margin-bottom: 0; }
+        .question-number {
+            min-width: 28px;
+            height: 28px;
+            background: #34a853;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        .question-text {
+            flex: 1;
+            color: #3c4043;
+            line-height: 1.6;
+            padding-top: 2px;
+        }
+        .sources-section {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 2px solid #f1f3f4;
+        }
+        .sources-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #5f6368;
+            margin-bottom: 12px;
+        }
+        .source-link {
+            display: inline-block;
+            margin: 6px 8px 6px 0;
+            padding: 8px 16px;
+            background: #f1f3f4;
+            color: #1a73e8;
+            text-decoration: none;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .source-link:hover {
+            background: #e8f0fe;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -290,52 +421,42 @@ async function generateHTMLReport(data) {
             <p class="date">📅 ${date}</p>
         </header>
         
-        <div class="topic-card">
+        ${['policy', 'tech', 'business', 'ux'].map(key => {
+            const icons = { policy: '📋', tech: '🔬', business: '💼', ux: '👥' };
+            const titles = { policy: '政策法規', tech: '技術發展', business: '商業模式', ux: '使用者體驗' };
+            const topic = extendedData[key];
+            
+            return `<div class="topic-card">
             <div class="topic-header">
-                <span class="topic-icon">📋</span>
-                <h2 class="topic-title">政策法規</h2>
+                <span class="topic-icon">${icons[key]}</span>
+                <h2 class="topic-title">${titles[key]}</h2>
             </div>
-            <div class="summary">${data.policy.summary}</div>
+            <div class="summary">${topic.summary}</div>
             <h3 class="points-title">關鍵重點</h3>
-            ${data.policy.keyPoints.map(point => `<div class="point-item">${point}</div>`).join('')}
-        </div>
-        
-        <div class="topic-card">
-            <div class="topic-header">
-                <span class="topic-icon">🔬</span>
-                <h2 class="topic-title">技術發展</h2>
+            ${topic.keyPoints.map(point => `<div class="point-item">${point}</div>`).join('')}
+            
+            <div class="questions-section">
+                <h3 class="questions-title">💡 延伸討論</h3>
+                ${topic.questions.map((q, i) => `
+                <div class="question-item">
+                    <div class="question-number">${i + 1}</div>
+                    <div class="question-text">${q}</div>
+                </div>`).join('')}
             </div>
-            <div class="summary">${data.tech.summary}</div>
-            <h3 class="points-title">關鍵重點</h3>
-            ${data.tech.keyPoints.map(point => `<div class="point-item">${point}</div>`).join('')}
-        </div>
-        
-        <div class="topic-card">
-            <div class="topic-header">
-                <span class="topic-icon">💼</span>
-                <h2 class="topic-title">商業模式</h2>
+            
+            <div class="sources-section">
+                <div class="sources-title">📚 資料來源</div>
+                ${topic.sources.map(s => `<a href="${s.url}" class="source-link" target="_blank">${s.name}</a>`).join('')}
             </div>
-            <div class="summary">${data.business.summary}</div>
-            <h3 class="points-title">關鍵重點</h3>
-            ${data.business.keyPoints.map(point => `<div class="point-item">${point}</div>`).join('')}
-        </div>
-        
-        <div class="topic-card">
-            <div class="topic-header">
-                <span class="topic-icon">👥</span>
-                <h2 class="topic-title">使用者體驗</h2>
-            </div>
-            <div class="summary">${data.ux.summary}</div>
-            <h3 class="points-title">關鍵重點</h3>
-            ${data.ux.keyPoints.map(point => `<div class="point-item">${point}</div>`).join('')}
-        </div>
+        </div>`;
+        }).join('')}
     </div>
 </body>
 </html>`;
 
     const htmlPath = path.join(__dirname, 'index.html');
     fs.writeFileSync(htmlPath, html, 'utf-8');
-    console.log('✅ 已生成 HTML 報告');
+    console.log('✅ 已生成完整 HTML 報告(含延伸問題和資料來源)');
 }
 
 async function main() {
