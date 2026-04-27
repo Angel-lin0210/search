@@ -1,6 +1,6 @@
 {
   "policy": {
-    "summary": "分析 政策法規 時發生錯誤: API 請求失敗: 404 Not Found - {\"type\":\"error\",\"error\":{\"type\":\"not_found_error\",\"message\":\"model: claude-3-haiku-20240307\"},\"request_id\":\"req_011CaUN4KGFPtHGMUjXELa3G\"}",
+    "summary": "分析 政策法規 時發生錯誤: API 請求失敗: 404 Not Found - {\"type\":\"error\",\"error\":{\"type\":\"not_found_error\",\"message\":\"model: claude-3-haiku-20240307\"},\"request_id\":\"req_011CaUNAUpPrmAEHYGyK8df8\"}",
     "keyPoints": [
       "系統發生錯誤",
       "請檢查 API 設定",
@@ -19,7 +19,7 @@
     ]
   },
   "tech": {
-    "summary": "分析 技術發展 時發生錯誤: API 請求失敗: 404 Not Found - {\"type\":\"error\",\"error\":{\"type\":\"not_found_error\",\"message\":\"model: claude-3-haiku-20240307\"},\"request_id\":\"req_011CaUN4PDsttYpVj4q1UxiN\"}",
+    "summary": "分析 技術發展 時發生錯誤: API 請求失敗: 404 Not Found - {\"type\":\"error\",\"error\":{\"type\":\"not_found_error\",\"message\":\"model: claude-3-haiku-20240307\"},\"request_id\":\"req_011CaUNAV52EgMXrozuRGMae\"}",
     "keyPoints": [
       "系統發生錯誤",
       "請檢查 API 設定",
@@ -38,7 +38,7 @@
     ]
   },
   "business": {
-    "summary": "分析 商業模式 時發生錯誤: API 請求失敗: 404 Not Found - {\"type\":\"error\",\"error\":{\"type\":\"not_found_error\",\"message\":\"model: claude-3-haiku-20240307\"},\"request_id\":\"req_011CaUN4PVVrMgv61tqhoS7S\"}",
+    "summary": "分析 商業模式 時發生錯誤: API 請求失敗: 404 Not Found - {\"type\":\"error\",\"error\":{\"type\":\"not_found_error\",\"message\":\"model: claude-3-haiku-20240307\"},\"request_id\":\"req_011CaUNAVHRVp6aRFfkaiKHG\"}",
     "keyPoints": [
       "系統發生錯誤",
       "請檢查 API 設定",
@@ -57,7 +57,7 @@
     ]
   },
   "ux": {
-    "summary": "分析 使用者體驗 時發生錯誤: API 請求失敗: 404 Not Found - {\"type\":\"error\",\"error\":{\"type\":\"not_found_error\",\"message\":\"model: claude-3-haiku-20240307\"},\"request_id\":\"req_011CaUN4PraCZBrKV13JRH7e\"}",
+    "summary": "分析 使用者體驗 時發生錯誤: API 請求失敗: 404 Not Found - {\"type\":\"error\",\"error\":{\"type\":\"not_found_error\",\"message\":\"model: claude-3-haiku-20240307\"},\"request_id\":\"req_011CaUNAVfF71f7DXhMYDsqd\"}",
     "keyPoints": [
       "系統發生錯誤",
       "請檢查 API 設定",
