@@ -58,8 +58,6 @@ async function sendEmailNotification(digestData) {
     
     if (!GMAIL_USER || !GMAIL_APP_PASSWORD) {
         console.log('❌ 無法發送 Email - 環境變數未設定');
-        console.log('   GMAIL_USER:', GMAIL_USER ? '已設定' : '未設定');
-        console.log('   GMAIL_APP_PASSWORD:', GMAIL_APP_PASSWORD ? '已設定' : '未設定');
         return;
     }
 
@@ -80,173 +78,88 @@ async function sendEmailNotification(digestData) {
     // 組合文字版本
     let textContent = `電動車生態每日觀察\n`;
     textContent += `${date}\n\n`;
+    textContent += `完整報告: https://${VERCEL_URL}\n\n`;
     textContent += `📋 政策法規\n${digestData.policy.summary}\n\n`;
     textContent += `🔬 技術發展\n${digestData.tech.summary}\n\n`;
     textContent += `💼 商業模式\n${digestData.business.summary}\n\n`;
     textContent += `👥 使用者體驗\n${digestData.ux.summary}\n\n`;
-    textContent += `完整報告: https://${VERCEL_URL}`;
 
-    // 組合 HTML 版本
-    const htmlContent = `
-<!DOCTYPE html>
+    // HTML 版本 - 白色簡潔風格,確保連結可點擊
+    const htmlContent = `<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <style>
-        body {
-            font-family: 'Microsoft JhengHei', 'Noto Sans TC', sans-serif;
-            background: #f5f5f5;
-            padding: 20px;
-            margin: 0;
-        }
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 1.8rem;
-        }
-        .header p {
-            margin: 10px 0 0 0;
-            opacity: 0.9;
-        }
-        .content {
-            padding: 30px;
-        }
-        .topic {
-            margin-bottom: 30px;
-            padding-bottom: 30px;
-            border-bottom: 1px solid #eee;
-        }
-        .topic:last-child {
-            border-bottom: none;
-        }
-        .topic-title {
-            font-size: 1.3rem;
-            color: #333;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .topic-icon {
-            font-size: 1.5rem;
-        }
-        .summary {
-            color: #555;
-            line-height: 1.7;
-            margin-bottom: 15px;
-        }
-        .points {
-            margin-top: 12px;
-        }
-        .point {
-            color: #666;
-            line-height: 1.6;
-            padding: 6px 0 6px 20px;
-            position: relative;
-        }
-        .point::before {
-            content: '•';
-            position: absolute;
-            left: 6px;
-            color: #667eea;
-            font-weight: bold;
-        }
-        .cta-button {
-            display: block;
-            width: fit-content;
-            margin: 30px auto;
-            padding: 14px 32px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            text-align: center;
-        }
-        .footer {
-            text-align: center;
-            padding: 20px;
-            color: #999;
-            font-size: 0.9rem;
-            background: #f9f9f9;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>⚡ 電動車生態每日觀察</h1>
-            <p>📅 ${date}</p>
-        </div>
-        
-        <div class="content">
-            <div class="topic">
-                <div class="topic-title">
-                    <span class="topic-icon">📋</span>
-                    政策法規
-                </div>
-                <div class="summary">${digestData.policy.summary}</div>
-                <div class="points">
-                    ${digestData.policy.keyPoints.map(point => `<div class="point">${point}</div>`).join('')}
-                </div>
-            </div>
-            
-            <div class="topic">
-                <div class="topic-title">
-                    <span class="topic-icon">🔬</span>
-                    技術發展
-                </div>
-                <div class="summary">${digestData.tech.summary}</div>
-                <div class="points">
-                    ${digestData.tech.keyPoints.map(point => `<div class="point">${point}</div>`).join('')}
-                </div>
-            </div>
-            
-            <div class="topic">
-                <div class="topic-title">
-                    <span class="topic-icon">💼</span>
-                    商業模式
-                </div>
-                <div class="summary">${digestData.business.summary}</div>
-                <div class="points">
-                    ${digestData.business.keyPoints.map(point => `<div class="point">${point}</div>`).join('')}
-                </div>
-            </div>
-            
-            <div class="topic">
-                <div class="topic-title">
-                    <span class="topic-icon">👥</span>
-                    使用者體驗
-                </div>
-                <div class="summary">${digestData.ux.summary}</div>
-                <div class="points">
-                    ${digestData.ux.keyPoints.map(point => `<div class="point">${point}</div>`).join('')}
-                </div>
-            </div>
-            
-            <a href="https://${VERCEL_URL}" class="cta-button">
-                📖 查看完整報告
-            </a>
-        </div>
-        
-        <div class="footer">
-            系統每日早上 6:00 自動執行<br>
-            電動車生態智能觀察系統
-        </div>
-    </div>
+<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft JhengHei','Noto Sans TC',sans-serif;background-color:#f5f5f5;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f5f5;padding:20px 0;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+<tr><td style="background:linear-gradient(135deg,#1a73e8 0%,#4285f4 100%);padding:32px 24px;text-align:center;">
+<h1 style="margin:0 0 8px 0;font-size:24px;font-weight:700;color:#ffffff;">⚡ 電動車生態每日觀察</h1>
+<p style="margin:0;font-size:14px;color:#ffffff;opacity:0.95;">📅 ${date}</p>
+</td></tr>
+<tr><td style="padding:24px;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
+<tr><td style="padding:0 0 16px 0;border-bottom:1px solid #e8eaed;">
+<h2 style="margin:0;font-size:18px;font-weight:700;color:#202124;">📋 政策法規</h2>
+</td></tr>
+<tr><td style="padding:14px 0;">
+<div style="background:#f8f9fa;padding:16px;border-radius:8px;border-left:3px solid #1a73e8;margin-bottom:12px;">
+<p style="margin:0;font-size:15px;color:#3c4043;line-height:1.7;">${digestData.policy.summary}</p>
+</div>
+<p style="margin:0 0 8px 0;font-size:13px;font-weight:600;color:#5f6368;text-transform:uppercase;">關鍵重點</p>
+${digestData.policy.keyPoints.map(point => `<p style="margin:6px 0;padding-left:18px;position:relative;font-size:14px;color:#3c4043;line-height:1.6;"><span style="position:absolute;left:4px;color:#1a73e8;font-weight:bold;">•</span>${point}</p>`).join('')}
+</td></tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
+<tr><td style="padding:0 0 16px 0;border-bottom:1px solid #e8eaed;">
+<h2 style="margin:0;font-size:18px;font-weight:700;color:#202124;">🔬 技術發展</h2>
+</td></tr>
+<tr><td style="padding:14px 0;">
+<div style="background:#f8f9fa;padding:16px;border-radius:8px;border-left:3px solid #1a73e8;margin-bottom:12px;">
+<p style="margin:0;font-size:15px;color:#3c4043;line-height:1.7;">${digestData.tech.summary}</p>
+</div>
+<p style="margin:0 0 8px 0;font-size:13px;font-weight:600;color:#5f6368;text-transform:uppercase;">關鍵重點</p>
+${digestData.tech.keyPoints.map(point => `<p style="margin:6px 0;padding-left:18px;position:relative;font-size:14px;color:#3c4043;line-height:1.6;"><span style="position:absolute;left:4px;color:#1a73e8;font-weight:bold;">•</span>${point}</p>`).join('')}
+</td></tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
+<tr><td style="padding:0 0 16px 0;border-bottom:1px solid #e8eaed;">
+<h2 style="margin:0;font-size:18px;font-weight:700;color:#202124;">💼 商業模式</h2>
+</td></tr>
+<tr><td style="padding:14px 0;">
+<div style="background:#f8f9fa;padding:16px;border-radius:8px;border-left:3px solid #1a73e8;margin-bottom:12px;">
+<p style="margin:0;font-size:15px;color:#3c4043;line-height:1.7;">${digestData.business.summary}</p>
+</div>
+<p style="margin:0 0 8px 0;font-size:13px;font-weight:600;color:#5f6368;text-transform:uppercase;">關鍵重點</p>
+${digestData.business.keyPoints.map(point => `<p style="margin:6px 0;padding-left:18px;position:relative;font-size:14px;color:#3c4043;line-height:1.6;"><span style="position:absolute;left:4px;color:#1a73e8;font-weight:bold;">•</span>${point}</p>`).join('')}
+</td></tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr><td style="padding:0 0 16px 0;border-bottom:1px solid #e8eaed;">
+<h2 style="margin:0;font-size:18px;font-weight:700;color:#202124;">👥 使用者體驗</h2>
+</td></tr>
+<tr><td style="padding:14px 0;">
+<div style="background:#f8f9fa;padding:16px;border-radius:8px;border-left:3px solid #1a73e8;margin-bottom:12px;">
+<p style="margin:0;font-size:15px;color:#3c4043;line-height:1.7;">${digestData.ux.summary}</p>
+</div>
+<p style="margin:0 0 8px 0;font-size:13px;font-weight:600;color:#5f6368;text-transform:uppercase;">關鍵重點</p>
+${digestData.ux.keyPoints.map(point => `<p style="margin:6px 0;padding-left:18px;position:relative;font-size:14px;color:#3c4043;line-height:1.6;"><span style="position:absolute;left:4px;color:#1a73e8;font-weight:bold;">•</span>${point}</p>`).join('')}
+</td></tr>
+</table>
+</td></tr>
+<tr><td style="padding:24px;background:#f8f9fa;text-align:center;">
+<a href="https://${VERCEL_URL}" style="display:inline-block;padding:14px 32px;background-color:#1a73e8;color:#ffffff;text-decoration:none;border-radius:8px;font-weight:600;font-size:15px;">📖 查看完整報告與延伸討論</a>
+</td></tr>
+<tr><td style="padding:20px;text-align:center;color:#80868b;font-size:13px;background:#f8f9fa;border-top:1px solid #e8eaed;">
+<p style="margin:4px 0;">系統每日早上 6:00 自動執行</p>
+<p style="margin:4px 0;">電動車生態智能觀察系統</p>
+</td></tr>
+</table>
+</td></tr>
+</table>
 </body>
 </html>`;
 
@@ -274,14 +187,7 @@ async function sendEmailNotification(digestData) {
     } catch (error) {
         console.log('');
         console.log('❌ Email 發送失敗');
-        console.log('   錯誤類型:', error.name);
         console.log('   錯誤訊息:', error.message);
-        if (error.code) {
-            console.log('   錯誤代碼:', error.code);
-        }
-        console.log('');
-        console.log('完整錯誤資訊:');
-        console.error(error);
         console.log('');
     }
 }
@@ -312,7 +218,7 @@ async function generateHTMLReport(data) {
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Noto Sans TC', sans-serif;
+            font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
             background: #f8f9fa;
             color: #2c3e50;
             line-height: 1.8;
