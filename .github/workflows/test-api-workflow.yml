@@ -1,7 +1,7 @@
 name: Test Anthropic API
 
 on:
-  workflow_dispatch:  # 手動觸發
+  workflow_dispatch:
 
 jobs:
   test-api:
@@ -9,10 +9,10 @@ jobs:
     
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608  # v4.1.0
       
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d  # v3.8.1
         with:
           node-version: '18'
       
