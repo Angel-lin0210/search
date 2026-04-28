@@ -10,6 +10,11 @@ const RECIPIENT_EMAIL = process.env.RECIPIENT_EMAIL || process.env.GMAIL_USER;
 const VERCEL_URL = 'search-six-rose.vercel.app';
 
 console.log('=== 環境變數檢查 ===');
+console.log('NEWSAPI_KEY 詳細資訊:');
+console.log('  值:', process.env.NEWSAPI_KEY);
+console.log('  類型:', typeof process.env.NEWSAPI_KEY);  
+console.log('  長度:', process.env.NEWSAPI_KEY ? process.env.NEWSAPI_KEY.length : 0);
+console.log('  Truthy:', !!process.env.NEWSAPI_KEY);
 console.log('ANTHROPIC_API_KEY:', ANTHROPIC_API_KEY ? `已設定 (${ANTHROPIC_API_KEY.substring(0, 20)}...)` : '未設定 ❌');
 console.log('NEWSAPI_KEY:', NEWSAPI_KEY ? `已設定 (${NEWSAPI_KEY.substring(0, 10)}...)` : '未設定 ❌');
 console.log('GMAIL_USER:', GMAIL_USER ? '已設定 ✅' : '未設定 ❌');
