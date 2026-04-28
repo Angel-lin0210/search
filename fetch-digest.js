@@ -3,17 +3,13 @@ const path = require('path');
 const nodemailer = require('nodemailer');
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-//const NEW_API_TOKEN = process.env.NEW_API_TOKEN;
-const NEW_API_TOKEN = process.env.NEW_API_TOKEN || '6ab04346142a41b4905d4e6c1939cd73';  // 臨時 fallback
 const GMAIL_USER = process.env.GMAIL_USER;
 const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
 const RECIPIENT_EMAIL = process.env.RECIPIENT_EMAIL || process.env.GMAIL_USER;
 const VERCEL_URL = 'search-six-rose.vercel.app';
 
 console.log('=== 環境變數檢查 ===');
-console.log('  Truthy:', !!process.env.NEW_API_TOKEN);
 console.log('ANTHROPIC_API_KEY:', ANTHROPIC_API_KEY ? `已設定 (${ANTHROPIC_API_KEY.substring(0, 20)}...)` : '未設定 ❌');
-console.log('NEW_API_TOKEN:', NEW_API_TOKEN ? `已設定 (${NEW_API_TOKEN.substring(0, 10)}...)` : '未設定 ❌');
 console.log('GMAIL_USER:', GMAIL_USER ? '已設定 ✅' : '未設定 ❌');
 console.log('GMAIL_APP_PASSWORD:', GMAIL_APP_PASSWORD ? '已設定 ✅' : '未設定 ❌');
 console.log('RECIPIENT_EMAIL:', RECIPIENT_EMAIL);
@@ -40,79 +36,91 @@ function getDefaultTopics() {
             id: 'policy',
             name: '政策法規',
             icon: '📋',
-            keywords: ['台灣 電動車 政策', '電動車 補助', '充電樁 法規']
+            keywords: ['台灣 電動車 充電樁 政策', '充電樁 管委會', '區權會 充電樁']
         },
         {
             id: 'tech',
             name: '技術發展',
             icon: '🔬',
-            keywords: ['電動車 技術', '快充 技術', '電池 技術']
+            keywords: ['電動車 快充技術', 'EMS 電能管理', 'V2G 雙向充電']
         },
         {
             id: 'business',
             name: '商業模式',
             icon: '💼',
-            keywords: ['充電站 營運', '充電樁 商業模式']
+            keywords: ['充電站 營運', '充電樁 投資']
         },
         {
             id: 'ux',
             name: '使用者體驗',
             icon: '👥',
-            keywords: ['電動車 使用體驗', '充電樁 問題']
+            keywords: ['充電樁 爭議', 'PTT 電動車 充電']
         }
     ];
 }
 
-// 搜尋真實新聞（使用多個關鍵字）
-async function searchNewsForTopic(topic) {
-    if (!NEW_API_TOKEN) {
-        console.log(`⚠️  未設定 NEW_API_TOKEN，跳過 ${topic.name} 的新聞搜尋`);
-        return [];
-    }
-
-    console.log(`  🔍 開始搜尋 ${topic.keywords.length} 個關鍵字:`);
+// 使用 Google News RSS 搜尋新聞
+async function searchNewsWithGoogleRSS(topic) {
+    console.log(`  🔍 使用 Google News RSS 搜尋 ${topic.keywords.length} 個關鍵字:`);
     
     const allArticles = [];
     const seenUrls = new Set();
     const searchStats = {};
     
-    // 對每個關鍵字進行搜尋
     for (let i = 0; i < topic.keywords.length; i++) {
         const keyword = topic.keywords[i];
         console.log(`     [${i + 1}/${topic.keywords.length}] "${keyword}"`);
         
-        const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(keyword)}&language=zh&sortBy=publishedAt&pageSize=3&apiKey=${NEW_API_TOKEN}`;
+        // Google News RSS URL
+        const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(keyword)}&hl=zh-TW&gl=TW&ceid=TW:zh-Hant`;
         
         try {
-            const response = await fetch(url);
-            const data = await response.json();
+            const response = await fetch(rssUrl);
+            const xmlText = await response.text();
             
-            if (data.status === 'ok' && data.articles && data.articles.length > 0) {
-                let newArticles = 0;
-                // 去重複
-                data.articles.forEach(article => {
-                    if (!seenUrls.has(article.url)) {
-                        seenUrls.add(article.url);
+            // 簡單解析 RSS XML (提取 item 標籤)
+            const items = xmlText.match(/<item>[\s\S]*?<\/item>/g) || [];
+            
+            let newArticles = 0;
+            for (const item of items.slice(0, 5)) { // 每個關鍵字最多取 5 篇
+                const titleMatch = item.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/);
+                const linkMatch = item.match(/<link>(.*?)<\/link>/);
+                const pubDateMatch = item.match(/<pubDate>(.*?)<\/pubDate>/);
+                const descMatch = item.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>/);
+                
+                if (titleMatch && linkMatch) {
+                    const url = linkMatch[1];
+                    
+                    if (!seenUrls.has(url)) {
+                        seenUrls.add(url);
+                        
+                        // 從描述中提取來源
+                        let source = 'Google News';
+                        if (descMatch) {
+                            const sourceMatch = descMatch[1].match(/<a[^>]*>(.*?)<\/a>/);
+                            if (sourceMatch) {
+                                source = sourceMatch[1];
+                            }
+                        }
+                        
                         allArticles.push({
-                            title: article.title,
-                            description: article.description || '',
-                            url: article.url,
-                            publishedAt: article.publishedAt,
-                            source: article.source.name,
-                            keyword: keyword  // 記錄是哪個關鍵字找到的
+                            title: titleMatch[1],
+                            description: descMatch ? descMatch[1].replace(/<[^>]*>/g, '').substring(0, 200) : '',
+                            url: url,
+                            publishedAt: pubDateMatch ? new Date(pubDateMatch[1]).toISOString() : new Date().toISOString(),
+                            source: source,
+                            keyword: keyword
                         });
                         newArticles++;
                     }
-                });
-                searchStats[keyword] = newArticles;
-                console.log(`        ✅ 找到 ${data.articles.length} 篇，新增 ${newArticles} 篇`);
-            } else {
-                searchStats[keyword] = 0;
-                console.log(`        ⚠️  未找到新聞`);
+                }
             }
             
-            // 避免超過 NewsAPI 的 rate limit
-            await new Promise(resolve => setTimeout(resolve, 500));
+            searchStats[keyword] = newArticles;
+            console.log(`        ✅ 找到 ${items.length} 篇，新增 ${newArticles} 篇`);
+            
+            // 避免請求過快
+            await new Promise(resolve => setTimeout(resolve, 1000));
             
         } catch (error) {
             searchStats[keyword] = 0;
@@ -120,16 +128,15 @@ async function searchNewsForTopic(topic) {
         }
     }
     
-    // 按發布時間排序，取最新的 10 篇
+    // 按發布時間排序，取最新的 15 篇
     allArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
-    const topArticles = allArticles.slice(0, 10);
+    const topArticles = allArticles.slice(0, 15);
     
     console.log(`\n  📊 搜尋統計:`);
     console.log(`     總搜尋關鍵字: ${topic.keywords.length} 個`);
     console.log(`     總找到新聞: ${allArticles.length} 篇`);
     console.log(`     取用最新: ${topArticles.length} 篇`);
     
-    // 顯示每個關鍵字的貢獻度
     const contributingKeywords = Object.entries(searchStats).filter(([k, v]) => v > 0);
     if (contributingKeywords.length > 0) {
         console.log(`     有效關鍵字: ${contributingKeywords.length}/${topic.keywords.length}`);
@@ -146,8 +153,21 @@ async function searchNewsForTopic(topic) {
     return topArticles;
 }
 
+// 載入手動提供的資料
+function loadManualData() {
+    const manualDataPath = path.join(__dirname, 'manual-data.json');
+    
+    if (fs.existsSync(manualDataPath)) {
+        console.log('📄 載入手動提供的資料');
+        const data = JSON.parse(fs.readFileSync(manualDataPath, 'utf-8'));
+        return data;
+    }
+    
+    return null;
+}
+
 // 使用 Claude 分析新聞
-async function analyzeNewsWithClaude(topic, newsArticles) {
+async function analyzeNewsWithClaude(topic, newsArticles, manualData) {
     if (!ANTHROPIC_API_KEY) {
         console.log(`  ⚠️  未設定 ANTHROPIC_API_KEY，無法分析`);
         return null;
@@ -155,20 +175,26 @@ async function analyzeNewsWithClaude(topic, newsArticles) {
 
     const newsContext = newsArticles.length > 0 
         ? `\n\n最新新聞 (${newsArticles.length} 篇):\n${newsArticles.map((article, i) => 
-            `${i + 1}. 【${article.source}】${article.title}\n   ${article.description}\n   關鍵字: ${article.keyword}`
+            `${i + 1}. 【${article.source}】${article.title}\n   ${article.description}\n   來源: ${article.url}`
           ).join('\n\n')}`
-        : '\n\n(未找到最新新聞，請基於產業知識分析)';
+        : '\n\n(未找到最新新聞)';
+    
+    // 加入手動提供的資料
+    let manualContext = '';
+    if (manualData && manualData[topic.id]) {
+        manualContext = `\n\n手動提供的重要資訊:\n${manualData[topic.id].join('\n')}`;
+    }
 
     const prompt = `你是電動車產業觀察專家。請分析「${topic.name}」這個主題的重要趨勢。
 
 搜尋範圍: ${topic.keywords.join('、')}
 ${newsContext}
+${manualContext}
 
 請提供:
-1. 摘要 (100字內，整合最新新聞和產業趨勢，優先使用新聞中的具體事件)
-2. 5個關鍵重點 (每個30字內，必須基於提供的新聞內容，包含具體案例或數據)
+1. 摘要 (150字內，整合最新新聞、手動資料和產業趨勢)
+2. 5個關鍵重點 (每個50字內，優先基於提供的新聞和資料)
 3. 5個延伸討論問題
-4. 資料來源會自動使用提供的新聞
 
 請用這個 JSON 格式回應,不要有任何其他文字:
 {
@@ -219,7 +245,7 @@ ${newsContext}
 
     const result = JSON.parse(jsonMatch[0]);
     
-    // 使用真實新聞作為來源
+    // 附上新聞來源
     if (newsArticles.length > 0) {
         result.sources = newsArticles.slice(0, 5).map(article => ({
             name: article.title,
@@ -240,9 +266,9 @@ async function fetchRealDigestData() {
     console.log('');
 
     const topics = loadKeywordsConfig();
+    const manualData = loadManualData();
     const results = {};
 
-    // 顯示所有即將使用的關鍵字
     console.log('📋 === 關鍵字設定總覽 ===');
     topics.forEach(topic => {
         console.log(`\n【${topic.name}】 共 ${topic.keywords.length} 個關鍵字:`);
@@ -254,19 +280,18 @@ async function fetchRealDigestData() {
 
     for (const topic of topics) {
         console.log(`📊 處理主題: ${topic.name}`);
-        console.log(`   準備搜尋 ${topic.keywords.length} 個關鍵字...`);
+        console.log(`   準備使用 Google News RSS 搜尋...`);
         console.log('');
         
         try {
-            const newsArticles = await searchNewsForTopic(topic);
-            const analysis = await analyzeNewsWithClaude(topic, newsArticles);
+            const newsArticles = await searchNewsWithGoogleRSS(topic);
+            const analysis = await analyzeNewsWithClaude(topic, newsArticles, manualData);
             
             if (analysis) {
                 results[topic.id] = analysis;
                 console.log(`✅ ${topic.name} 完成`);
                 console.log(`   📰 共找到 ${newsArticles.length} 篇新聞`);
                 console.log(`   📝 生成 ${analysis.keyPoints.length} 個關鍵重點`);
-                console.log(`   💡 提出 ${analysis.questions.length} 個討論問題`);
                 if (analysis.sources && analysis.sources.length > 0) {
                     console.log(`   🔗 包含 ${analysis.sources.length} 個新聞來源`);
                 }
@@ -284,7 +309,6 @@ async function fetchRealDigestData() {
         }
     }
 
-    // 執行完成後的統計報告
     console.log('\n📊 === 執行統計報告 ===');
     Object.keys(results).forEach(key => {
         const topic = topics.find(t => t.id === key);
@@ -315,22 +339,16 @@ async function sendEmailNotification(digestData) {
         }
     });
 
-    const textContent = `電動車生態每日觀察\n${date}\n\n完整報告: https://${VERCEL_URL}\n\n📋 政策法規\n${digestData.policy.summary}\n\n🔬 技術發展\n${digestData.tech.summary}\n\n💼 商業模式\n${digestData.business.summary}\n\n👥 使用者體驗\n${digestData.ux.summary}\n\n`;
-
     const htmlContent = `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft JhengHei',sans-serif;background-color:#f5f5f5;">
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f5f5;padding:20px 0;">
-<tr><td align="center">
-<table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+<body style="font-family:-apple-system,sans-serif;background-color:#f5f5f5;padding:20px 0;">
+<table width="600" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;background-color:#ffffff;border-radius:12px;">
 <tr><td style="background:linear-gradient(135deg,#1a73e8 0%,#4285f4 100%);padding:32px 24px;text-align:center;">
-<h1 style="margin:0 0 8px 0;font-size:24px;font-weight:700;color:#ffffff;">⚡ 電動車生態每日觀察</h1>
-<p style="margin:0;font-size:14px;color:#ffffff;opacity:0.95;">📅 ${date}</p>
-<p style="margin:8px 0 0 0;font-size:13px;color:#ffffff;opacity:0.9;">✨ 基於真實新聞來源分析</p>
+<h1 style="margin:0;font-size:24px;color:#ffffff;">⚡ 電動車生態每日觀察</h1>
+<p style="margin:8px 0 0 0;font-size:14px;color:#ffffff;">📅 ${date} | 🔍 Google News RSS</p>
 </td></tr>
 <tr><td style="padding:24px;">
 ${['policy', 'tech', 'business', 'ux'].map(key => {
@@ -338,32 +356,18 @@ ${['policy', 'tech', 'business', 'ux'].map(key => {
     const titles = { policy: '政策法規', tech: '技術發展', business: '商業模式', ux: '使用者體驗' };
     const topic = digestData[key];
     
-    return `<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
-<tr><td style="padding:0 0 16px 0;border-bottom:1px solid #e8eaed;">
-<h2 style="margin:0;font-size:18px;font-weight:700;color:#202124;">${icons[key]} ${titles[key]}</h2>
-</td></tr>
-<tr><td style="padding:14px 0;">
-<div style="background:#f8f9fa;padding:16px;border-radius:8px;border-left:3px solid #1a73e8;margin-bottom:12px;">
-<p style="margin:0;font-size:15px;color:#3c4043;line-height:1.7;">${topic.summary}</p>
+    return `<div style="margin-bottom:24px;">
+<h2 style="font-size:18px;color:#202124;">${icons[key]} ${titles[key]}</h2>
+<div style="background:#f8f9fa;padding:16px;border-radius:8px;margin:12px 0;">
+<p style="margin:0;font-size:15px;line-height:1.7;">${topic.summary}</p>
 </div>
-<p style="margin:0 0 8px 0;font-size:13px;font-weight:600;color:#5f6368;">關鍵重點</p>
-${topic.keyPoints.map(point => `<p style="margin:6px 0;padding-left:18px;position:relative;font-size:14px;color:#3c4043;line-height:1.6;"><span style="position:absolute;left:4px;color:#1a73e8;font-weight:bold;">•</span>${point}</p>`).join('')}
-${topic.sources && topic.sources.length > 0 ? `
-<p style="margin:16px 0 8px 0;font-size:13px;font-weight:600;color:#5f6368;">📰 新聞來源</p>
-${topic.sources.slice(0, 3).map(s => `<p style="margin:4px 0;font-size:13px;"><a href="${s.url}" style="color:#1a73e8;text-decoration:none;">${s.name}</a></p>`).join('')}
-` : ''}
-</td></tr>
-</table>`;
+${topic.keyPoints.map(point => `<p style="margin:6px 0;padding-left:18px;font-size:14px;">• ${point}</p>`).join('')}
+${topic.sources && topic.sources.length > 0 ? `<p style="margin:16px 0 8px 0;font-size:13px;font-weight:600;color:#5f6368;">📰 新聞來源</p>` + topic.sources.slice(0, 3).map(s => `<p style="margin:4px 0;font-size:13px;"><a href="${s.url}" style="color:#1a73e8;">${s.name}</a></p>`).join('') : ''}
+</div>`;
 }).join('')}
 </td></tr>
-<tr><td style="padding:24px;background:#f8f9fa;text-align:center;">
-<a href="https://${VERCEL_URL}" style="display:inline-block;padding:14px 32px;background-color:#1a73e8;color:#ffffff;text-decoration:none;border-radius:8px;font-weight:600;font-size:15px;">📖 查看完整報告</a>
-</td></tr>
-<tr><td style="padding:20px;text-align:center;color:#80868b;font-size:13px;background:#f8f9fa;border-top:1px solid #e8eaed;">
-<p style="margin:4px 0;">✨ 系統每日早上 6:00 自動執行</p>
-<p style="margin:4px 0;">📊 整合 NewsAPI 真實新聞來源</p>
-</td></tr>
-</table>
+<tr><td style="padding:24px;text-align:center;background:#f8f9fa;">
+<a href="https://${VERCEL_URL}" style="display:inline-block;padding:14px 32px;background-color:#1a73e8;color:#ffffff;text-decoration:none;border-radius:8px;font-weight:600;">📖 查看完整報告</a>
 </td></tr>
 </table>
 </body>
@@ -373,14 +377,12 @@ ${topic.sources.slice(0, 3).map(s => `<p style="margin:4px 0;font-size:13px;"><a
         from: `"電動車每日觀察" <${GMAIL_USER}>`,
         to: RECIPIENT_EMAIL,
         subject: `⚡ 電動車生態每日觀察 - ${date}`,
-        text: textContent,
         html: htmlContent
     };
 
     try {
         const info = await transporter.sendMail(mailOptions);
         console.log('🎉 ✅ Email 發送成功!');
-        console.log('   Message ID:', info.messageId);
     } catch (error) {
         console.log('❌ Email 發送失敗:', error.message);
     }
@@ -406,158 +408,31 @@ async function generateHTMLReport(data) {
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>電動車生態每日觀察 - ${date}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #f8f9fa;
-            color: #2c3e50;
-            line-height: 1.8;
-            padding: 20px;
-        }
+        body { font-family: 'Microsoft JhengHei', sans-serif; background: #f8f9fa; color: #2c3e50; line-height: 1.8; padding: 20px; }
         .container { max-width: 900px; margin: 0 auto; }
-        header {
-            text-align: center;
-            padding: 40px 20px;
-            background: white;
-            border-radius: 16px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
+        header { text-align: center; padding: 40px 20px; background: white; border-radius: 16px; margin-bottom: 30px; }
         h1 { font-size: 2rem; color: #1a73e8; margin-bottom: 12px; }
-        .date { color: #5f6368; font-size: 0.95rem; }
-        .badge {
-            display: inline-block;
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 6px 12px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            margin-top: 8px;
-        }
-        .topic-card {
-            background: white;
-            border-radius: 16px;
-            padding: 32px;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-        .topic-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 2px solid #f1f3f4;
-        }
+        .badge { display: inline-block; background: #e8f5e9; color: #2e7d32; padding: 6px 12px; border-radius: 12px; font-size: 0.85rem; margin-top: 8px; }
+        .topic-card { background: white; border-radius: 16px; padding: 32px; margin-bottom: 24px; }
+        .topic-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #f1f3f4; }
         .topic-icon { font-size: 2rem; }
         .topic-title { font-size: 1.5rem; font-weight: 700; }
-        .summary {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            border-left: 4px solid #1a73e8;
-            line-height: 1.8;
-        }
-        .points-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: #202124;
-        }
-        .point-item {
-            padding: 12px 0 12px 24px;
-            position: relative;
-            line-height: 1.7;
-            color: #3c4043;
-        }
-        .point-item::before {
-            content: '•';
-            position: absolute;
-            left: 8px;
-            color: #1a73e8;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-        .questions-section {
-            background: #e8f5e9;
-            padding: 24px;
-            border-radius: 12px;
-            margin-top: 24px;
-        }
-        .questions-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #1e7e34;
-            margin-bottom: 16px;
-        }
-        .question-item {
-            background: white;
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            display: flex;
-            gap: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-        }
-        .question-number {
-            min-width: 28px;
-            height: 28px;
-            background: #34a853;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        .question-text {
-            flex: 1;
-            color: #3c4043;
-            line-height: 1.6;
-        }
-        .sources-section {
-            margin-top: 24px;
-            padding-top: 20px;
-            border-top: 2px solid #f1f3f4;
-        }
-        .sources-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #5f6368;
-            margin-bottom: 12px;
-        }
-        .source-link {
-            display: block;
-            margin: 8px 0;
-            padding: 12px 16px;
-            background: #f1f3f4;
-            color: #1a73e8;
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 0.9rem;
-        }
-        .source-link:hover {
-            background: #e8f0fe;
-        }
-        .source-meta {
-            font-size: 0.8rem;
-            color: #5f6368;
-            margin-top: 4px;
-        }
+        .summary { background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 24px; border-left: 4px solid #1a73e8; }
+        .point-item { padding: 12px 0 12px 24px; position: relative; }
+        .point-item::before { content: '•'; position: absolute; left: 8px; color: #1a73e8; font-weight: bold; }
+        .sources-section { margin-top: 24px; padding-top: 20px; border-top: 2px solid #f1f3f4; }
+        .source-link { display: block; margin: 8px 0; padding: 12px 16px; background: #f1f3f4; color: #1a73e8; text-decoration: none; border-radius: 8px; }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>⚡ 電動車生態每日觀察</h1>
-            <p class="date">📅 ${date}</p>
-            <span class="badge">✨ 整合真實新聞來源</span>
+            <p>📅 ${date}</p>
+            <span class="badge">🔍 Google News RSS</span>
         </header>
         
         ${['policy', 'tech', 'business', 'ux'].map(key => {
@@ -571,26 +446,12 @@ async function generateHTMLReport(data) {
                 <h2 class="topic-title">${titles[key]}</h2>
             </div>
             <div class="summary">${topic.summary}</div>
-            <h3 class="points-title">關鍵重點</h3>
             ${topic.keyPoints.map(point => `<div class="point-item">${point}</div>`).join('')}
-            
-            ${topic.questions && topic.questions.length > 0 ? `
-            <div class="questions-section">
-                <h3 class="questions-title">💡 延伸討論</h3>
-                ${topic.questions.map((q, i) => `
-                <div class="question-item">
-                    <div class="question-number">${i + 1}</div>
-                    <div class="question-text">${q}</div>
-                </div>`).join('')}
-            </div>` : ''}
             
             ${topic.sources && topic.sources.length > 0 ? `
             <div class="sources-section">
-                <div class="sources-title">📰 新聞來源</div>
-                ${topic.sources.map(s => `<a href="${s.url}" class="source-link" target="_blank">
-                    ${s.name}
-                    <div class="source-meta">${s.source} • ${new Date(s.publishedAt).toLocaleDateString('zh-TW')}</div>
-                </a>`).join('')}
+                <div style="font-size:0.9rem;font-weight:600;color:#5f6368;margin-bottom:12px;">📰 新聞來源</div>
+                ${topic.sources.map(s => `<a href="${s.url}" class="source-link" target="_blank">${s.name}<div style="font-size:0.8rem;color:#5f6368;margin-top:4px;">${s.source} • ${new Date(s.publishedAt).toLocaleDateString('zh-TW')}</div></a>`).join('')}
             </div>` : ''}
         </div>`;
         }).join('')}
@@ -607,7 +468,7 @@ async function main() {
     try {
         console.log('');
         console.log('=== 電動車生態每日觀察系統 ===');
-        console.log('=== 整合 NewsAPI 真實新聞 ===');
+        console.log('=== 使用 Google News RSS ===');
         console.log('');
         
         const digestData = await fetchRealDigestData();
