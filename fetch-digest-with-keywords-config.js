@@ -3,7 +3,7 @@ const path = require('path');
 const nodemailer = require('nodemailer');
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-const NEW_API_TOKEN = process.env.NEW_API_TOKEN;
+const NEW_API_TOKEN = '6ab04346142a41b4905d4e6c1939cd73';  // 使用固定值
 const GMAIL_USER = process.env.GMAIL_USER;
 const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
 const RECIPIENT_EMAIL = process.env.RECIPIENT_EMAIL || process.env.GMAIL_USER;
@@ -79,7 +79,9 @@ async function searchNewsForTopic(topic) {
         const keyword = topic.keywords[i];
         console.log(`     [${i + 1}/${topic.keywords.length}] "${keyword}"`);
         
-        const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(keyword)}&language=zh&sortBy=publishedAt&pageSize=3&apiKey=${NEW_API_TOKEN}`;
+        // 限制只搜尋台灣主流新聞網站
+        const domains = 'udn.com,ltn.com.tw,cna.com.tw,chinatimes.com,storm.mg,technews.tw,ctee.com.tw';
+        const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(keyword)}&domains=${domains}&language=zh&sortBy=publishedAt&pageSize=5&apiKey=${NEW_API_TOKEN}`;
         
         try {
             const response = await fetch(url);
