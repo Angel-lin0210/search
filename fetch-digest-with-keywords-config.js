@@ -68,14 +68,16 @@ async function searchNewsForTopic(topic) {
         return [];
     }
 
-    console.log(`  🔍 使用 ${topic.keywords.length} 個關鍵字搜尋新聞`);
+    console.log(`  🔍 開始搜尋 ${topic.keywords.length} 個關鍵字:`);
     
     const allArticles = [];
     const seenUrls = new Set();
+    const searchStats = {};
     
     // 對每個關鍵字進行搜尋
-    for (const keyword of topic.keywords) {
-        console.log(`     搜尋: "${keyword}"`);
+    for (let i = 0; i < topic.keywords.length; i++) {
+        const keyword = topic.keywords[i];
+        console.log(`     [${i + 1}/${topic.keywords.length}] "${keyword}"`);
         
         const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(keyword)}&language=zh&sortBy=publishedAt&pageSize=3&apiKey=${NEWSAPI_KEY}`;
         
@@ -84,6 +86,7 @@ async function searchNewsForTopic(topic) {
             const data = await response.json();
             
             if (data.status === 'ok' && data.articles && data.articles.length > 0) {
+                let newArticles = 0;
                 // 去重複
                 data.articles.forEach(article => {
                     if (!seenUrls.has(article.url)) {
@@ -96,15 +99,22 @@ async function searchNewsForTopic(topic) {
                             source: article.source.name,
                             keyword: keyword  // 記錄是哪個關鍵字找到的
                         });
+                        newArticles++;
                     }
                 });
+                searchStats[keyword] = newArticles;
+                console.log(`        ✅ 找到 ${data.articles.length} 篇，新增 ${newArticles} 篇`);
+            } else {
+                searchStats[keyword] = 0;
+                console.log(`        ⚠️  未找到新聞`);
             }
             
             // 避免超過 NewsAPI 的 rate limit
             await new Promise(resolve => setTimeout(resolve, 500));
             
         } catch (error) {
-            console.error(`     ❌ "${keyword}" 搜尋失敗:`, error.message);
+            searchStats[keyword] = 0;
+            console.error(`        ❌ 搜尋失敗: ${error.message}`);
         }
     }
     
@@ -112,7 +122,24 @@ async function searchNewsForTopic(topic) {
     allArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
     const topArticles = allArticles.slice(0, 10);
     
-    console.log(`  ✅ 總共找到 ${topArticles.length} 篇新聞`);
+    console.log(`\n  📊 搜尋統計:`);
+    console.log(`     總搜尋關鍵字: ${topic.keywords.length} 個`);
+    console.log(`     總找到新聞: ${allArticles.length} 篇`);
+    console.log(`     取用最新: ${topArticles.length} 篇`);
+    
+    // 顯示每個關鍵字的貢獻度
+    const contributingKeywords = Object.entries(searchStats).filter(([k, v]) => v > 0);
+    if (contributingKeywords.length > 0) {
+        console.log(`     有效關鍵字: ${contributingKeywords.length}/${topic.keywords.length}`);
+        console.log(`     最佳關鍵字:`);
+        contributingKeywords
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3)
+            .forEach(([kw, count]) => {
+                console.log(`       • "${kw}": ${count} 篇`);
+            });
+    }
+    console.log('');
     
     return topArticles;
 }
@@ -213,9 +240,20 @@ async function fetchRealDigestData() {
     const topics = loadKeywordsConfig();
     const results = {};
 
+    // 顯示所有即將使用的關鍵字
+    console.log('📋 === 關鍵字設定總覽 ===');
+    topics.forEach(topic => {
+        console.log(`\n【${topic.name}】 共 ${topic.keywords.length} 個關鍵字:`);
+        topic.keywords.forEach((kw, i) => {
+            console.log(`  ${i + 1}. "${kw}"`);
+        });
+    });
+    console.log('\n=========================\n');
+
     for (const topic of topics) {
         console.log(`📊 處理主題: ${topic.name}`);
-        console.log(`   關鍵字: ${topic.keywords.join(', ')}`);
+        console.log(`   準備搜尋 ${topic.keywords.length} 個關鍵字...`);
+        console.log('');
         
         try {
             const newsArticles = await searchNewsForTopic(topic);
@@ -224,6 +262,12 @@ async function fetchRealDigestData() {
             if (analysis) {
                 results[topic.id] = analysis;
                 console.log(`✅ ${topic.name} 完成`);
+                console.log(`   📰 共找到 ${newsArticles.length} 篇新聞`);
+                console.log(`   📝 生成 ${analysis.keyPoints.length} 個關鍵重點`);
+                console.log(`   💡 提出 ${analysis.questions.length} 個討論問題`);
+                if (analysis.sources && analysis.sources.length > 0) {
+                    console.log(`   🔗 包含 ${analysis.sources.length} 個新聞來源`);
+                }
             }
             console.log('');
         } catch (error) {
@@ -237,6 +281,16 @@ async function fetchRealDigestData() {
             console.log('');
         }
     }
+
+    // 執行完成後的統計報告
+    console.log('\n📊 === 執行統計報告 ===');
+    Object.keys(results).forEach(key => {
+        const topic = topics.find(t => t.id === key);
+        const result = results[key];
+        const sourcesCount = result.sources ? result.sources.length : 0;
+        console.log(`${topic.icon} ${topic.name}: ${sourcesCount} 篇新聞來源`);
+    });
+    console.log('=========================\n');
 
     return results;
 }
