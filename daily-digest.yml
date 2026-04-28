@@ -30,7 +30,6 @@ jobs:
            GMAIL_USER: ${{ secrets.GMAIL_USER }}
            GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
            RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
-        run: node fetch-digest.js
 
       - name: Commit and push results
         run: |
