@@ -3,7 +3,7 @@ const path = require('path');
 const nodemailer = require('nodemailer');
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-const NEWSAPI_KEY = process.env.NEWSAPI_KEY;
+const NEW_API_TOKEN = process.env.NEW_API_TOKEN;
 const GMAIL_USER = process.env.GMAIL_USER;
 const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
 const RECIPIENT_EMAIL = process.env.RECIPIENT_EMAIL || process.env.GMAIL_USER;
@@ -11,7 +11,7 @@ const VERCEL_URL = 'search-six-rose.vercel.app';
 
 console.log('=== 環境變數檢查 ===');
 console.log('ANTHROPIC_API_KEY:', ANTHROPIC_API_KEY ? `已設定 (${ANTHROPIC_API_KEY.substring(0, 20)}...)` : '未設定 ❌');
-console.log('NEWSAPI_KEY:', NEWSAPI_KEY ? `已設定 (${NEWSAPI_KEY.substring(0, 10)}...)` : '未設定 ❌');
+console.log('NEW_API_TOKEN:', NEW_API_TOKEN ? `已設定 (${NEW_API_TOKEN.substring(0, 10)}...)` : '未設定 ❌');
 console.log('GMAIL_USER:', GMAIL_USER ? '已設定 ✅' : '未設定 ❌');
 console.log('GMAIL_APP_PASSWORD:', GMAIL_APP_PASSWORD ? '已設定 ✅' : '未設定 ❌');
 console.log('RECIPIENT_EMAIL:', RECIPIENT_EMAIL);
@@ -63,8 +63,8 @@ function getDefaultTopics() {
 
 // 搜尋真實新聞（使用多個關鍵字）
 async function searchNewsForTopic(topic) {
-    if (!NEWSAPI_KEY) {
-        console.log(`⚠️  未設定 NEWSAPI_KEY，跳過 ${topic.name} 的新聞搜尋`);
+    if (!NEW_API_TOKEN) {
+        console.log(`⚠️  未設定 NEW_API_TOKEN，跳過 ${topic.name} 的新聞搜尋`);
         return [];
     }
 
@@ -79,7 +79,7 @@ async function searchNewsForTopic(topic) {
         const keyword = topic.keywords[i];
         console.log(`     [${i + 1}/${topic.keywords.length}] "${keyword}"`);
         
-        const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(keyword)}&language=zh&sortBy=publishedAt&pageSize=3&apiKey=${NEWSAPI_KEY}`;
+        const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(keyword)}&language=zh&sortBy=publishedAt&pageSize=3&apiKey=${NEW_API_TOKEN}`;
         
         try {
             const response = await fetch(url);
