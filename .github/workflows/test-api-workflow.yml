@@ -1,0 +1,83 @@
+name: Test Anthropic API
+
+on:
+  workflow_dispatch:  # 手動觸發
+
+jobs:
+  test-api:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Test API with different models
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          echo "=== Anthropic API 測試 ==="
+          echo "API Key 前綴: ${ANTHROPIC_API_KEY:0:20}..."
+          echo ""
+          
+          # 測試多個模型
+          MODELS=(
+            "claude-3-haiku-20240307"
+            "claude-3-sonnet-20240229"
+            "claude-3-5-sonnet-20241022"
+            "claude-3-opus-20240229"
+          )
+          
+          for MODEL in "${MODELS[@]}"; do
+            echo "測試模型: $MODEL"
+            
+            RESPONSE=$(curl -s -w "\n%{http_code}" -X POST https://api.anthropic.com/v1/messages \
+              -H "Content-Type: application/json" \
+              -H "x-api-key: $ANTHROPIC_API_KEY" \
+              -H "anthropic-version: 2023-06-01" \
+              -d "{
+                \"model\": \"$MODEL\",
+                \"max_tokens\": 100,
+                \"messages\": [{
+                  \"role\": \"user\",
+                  \"content\": \"Say hello in one word.\"
+                }]
+              }")
+            
+            HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+            BODY=$(echo "$RESPONSE" | sed '$d')
+            
+            echo "  狀態碼: $HTTP_CODE"
+            
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "  ✅ 成功!"
+              echo "  回應: $BODY" | head -c 200
+              echo ""
+              echo ""
+              echo "=== 找到可用的模型: $MODEL ==="
+              exit 0
+            else
+              echo "  ❌ 失敗"
+              echo "  錯誤: $BODY" | head -c 200
+              echo ""
+            fi
+          done
+          
+          echo ""
+          echo "=== 測試結果 ==="
+          echo "❌ 沒有找到可用的模型"
+          echo ""
+          echo "可能的原因:"
+          echo "1. API Key 無效或過期"
+          echo "2. 帳戶沒有模型訪問權限"
+          echo "3. API Key 需要時間激活 (可能需要幾小時)"
+          echo ""
+          echo "建議:"
+          echo "1. 到 console.anthropic.com/settings/keys 確認 API Key 狀態"
+          echo "2. 確認 API Key 是 Active 狀態"
+          echo "3. 等待幾小時後再試"
+          echo "4. 如果持續失敗,聯繫 Anthropic 支援"
