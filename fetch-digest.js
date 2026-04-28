@@ -8,10 +8,15 @@ const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
 const RECIPIENT_EMAIL = process.env.RECIPIENT_EMAIL || process.env.GMAIL_USER;
 const VERCEL_URL = 'search-six-rose.vercel.app';
 
+// Google Sheets 設定 - 你需要設定這個!
+const GOOGLE_SHEET_ID = process.env.GOOGLE_SHEET_ID || 'YOUR_SHEET_ID_HERE';
+const GOOGLE_SHEET_API_KEY = process.env.GOOGLE_SHEET_API_KEY || '';
+
 console.log('=== 環境變數檢查 ===');
 console.log('ANTHROPIC_API_KEY:', ANTHROPIC_API_KEY ? `已設定 (${ANTHROPIC_API_KEY.substring(0, 20)}...)` : '未設定 ❌');
 console.log('GMAIL_USER:', GMAIL_USER ? '已設定 ✅' : '未設定 ❌');
 console.log('GMAIL_APP_PASSWORD:', GMAIL_APP_PASSWORD ? '已設定 ✅' : '未設定 ❌');
+console.log('GOOGLE_SHEET_ID:', GOOGLE_SHEET_ID !== 'YOUR_SHEET_ID_HERE' ? '已設定 ✅' : '未設定 ⚠️');
 console.log('RECIPIENT_EMAIL:', RECIPIENT_EMAIL);
 
 // 載入關鍵字設定檔
@@ -59,42 +64,125 @@ function getDefaultTopics() {
     ];
 }
 
+// 從 Google Sheets 載入手動資料
+async function loadManualDataFromSheets() {
+    console.log('\n📊 === 載入 Google Sheets 資料 ===');
+    
+    if (GOOGLE_SHEET_ID === 'YOUR_SHEET_ID_HERE') {
+        console.log('⚠️  未設定 Google Sheet ID，跳過');
+        return loadManualDataFromFile();
+    }
+    
+    try {
+        // 使用 Google Sheets API v4 的公開 CSV 匯出功能
+        // 格式: https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={SHEET_NAME}
+        const sheetName = 'manual-data'; // 工作表名稱
+        const url = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+        
+        console.log(`🔗 正在讀取: Google Sheets`);
+        
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            throw new Error(`無法讀取 Google Sheets: ${response.status}`);
+        }
+        
+        const csvText = await response.text();
+        
+        // 解析 CSV
+        const lines = csvText.split('\n').filter(line => line.trim());
+        const manualData = {
+            policy: [],
+            tech: [],
+            business: [],
+            ux: []
+        };
+        
+        let count = 0;
+        // 跳過第一行 (標題)
+        for (let i = 1; i < lines.length; i++) {
+            const line = lines[i];
+            
+            // 簡單 CSV 解析 (處理引號內的逗號)
+            const parts = line.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || [];
+            const cleanParts = parts.map(p => p.replace(/^"|"$/g, '').trim());
+            
+            if (cleanParts.length >= 2) {
+                const topic = cleanParts[0].toLowerCase(); // policy, tech, business, ux
+                const content = cleanParts[1];
+                
+                if (manualData[topic] && content) {
+                    manualData[topic].push(content);
+                    count++;
+                }
+            }
+        }
+        
+        console.log(`✅ 成功載入 ${count} 筆手動資料`);
+        console.log(`   📋 政策法規: ${manualData.policy.length} 筆`);
+        console.log(`   🔬 技術發展: ${manualData.tech.length} 筆`);
+        console.log(`   💼 商業模式: ${manualData.business.length} 筆`);
+        console.log(`   👥 使用者體驗: ${manualData.ux.length} 筆`);
+        console.log('');
+        
+        return manualData;
+        
+    } catch (error) {
+        console.error(`❌ 讀取 Google Sheets 失敗: ${error.message}`);
+        console.log('⚠️  改用本地 manual-data.json 檔案');
+        return loadManualDataFromFile();
+    }
+}
+
+// 從本地檔案載入手動資料 (備用)
+function loadManualDataFromFile() {
+    const manualDataPath = path.join(__dirname, 'manual-data.json');
+    
+    if (fs.existsSync(manualDataPath)) {
+        console.log('📄 載入本地 manual-data.json');
+        const data = JSON.parse(fs.readFileSync(manualDataPath, 'utf-8'));
+        return data;
+    }
+    
+    console.log('⚠️  未找到手動資料');
+    return null;
+}
+
 // 使用 Google News RSS 搜尋新聞
 async function searchNewsWithGoogleRSS(topic) {
     console.log(`  🔍 使用 Google News RSS 搜尋 ${topic.keywords.length} 個關鍵字:`);
     
     const allArticles = [];
-    const seenUrls = new Set();
+    const seenTitles = new Set();  // 改用標題去重
     const searchStats = {};
     
     for (let i = 0; i < topic.keywords.length; i++) {
         const keyword = topic.keywords[i];
         console.log(`     [${i + 1}/${topic.keywords.length}] "${keyword}"`);
         
-        // Google News RSS URL
         const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(keyword)}&hl=zh-TW&gl=TW&ceid=TW:zh-Hant`;
         
         try {
             const response = await fetch(rssUrl);
             const xmlText = await response.text();
             
-            // 簡單解析 RSS XML (提取 item 標籤)
             const items = xmlText.match(/<item>[\s\S]*?<\/item>/g) || [];
             
             let newArticles = 0;
-            for (const item of items.slice(0, 5)) { // 每個關鍵字最多取 5 篇
+            for (const item of items.slice(0, 5)) {
                 const titleMatch = item.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/);
                 const linkMatch = item.match(/<link>(.*?)<\/link>/);
                 const pubDateMatch = item.match(/<pubDate>(.*?)<\/pubDate>/);
                 const descMatch = item.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>/);
                 
                 if (titleMatch && linkMatch) {
+                    const title = titleMatch[1];
                     const url = linkMatch[1];
                     
-                    if (!seenUrls.has(url)) {
-                        seenUrls.add(url);
+                    // 用標題去重,避免同一則新聞重複
+                    if (!seenTitles.has(title)) {
+                        seenTitles.add(title);
                         
-                        // 從描述中提取來源
                         let source = 'Google News';
                         if (descMatch) {
                             const sourceMatch = descMatch[1].match(/<a[^>]*>(.*?)<\/a>/);
@@ -104,7 +192,7 @@ async function searchNewsWithGoogleRSS(topic) {
                         }
                         
                         allArticles.push({
-                            title: titleMatch[1],
+                            title: title,
                             description: descMatch ? descMatch[1].replace(/<[^>]*>/g, '').substring(0, 200) : '',
                             url: url,
                             publishedAt: pubDateMatch ? new Date(pubDateMatch[1]).toISOString() : new Date().toISOString(),
@@ -119,7 +207,6 @@ async function searchNewsWithGoogleRSS(topic) {
             searchStats[keyword] = newArticles;
             console.log(`        ✅ 找到 ${items.length} 篇，新增 ${newArticles} 篇`);
             
-            // 避免請求過快
             await new Promise(resolve => setTimeout(resolve, 1000));
             
         } catch (error) {
@@ -128,7 +215,6 @@ async function searchNewsWithGoogleRSS(topic) {
         }
     }
     
-    // 按發布時間排序，取最新的 15 篇
     allArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
     const topArticles = allArticles.slice(0, 15);
     
@@ -153,19 +239,6 @@ async function searchNewsWithGoogleRSS(topic) {
     return topArticles;
 }
 
-// 載入手動提供的資料
-function loadManualData() {
-    const manualDataPath = path.join(__dirname, 'manual-data.json');
-    
-    if (fs.existsSync(manualDataPath)) {
-        console.log('📄 載入手動提供的資料');
-        const data = JSON.parse(fs.readFileSync(manualDataPath, 'utf-8'));
-        return data;
-    }
-    
-    return null;
-}
-
 // 使用 Claude 分析新聞
 async function analyzeNewsWithClaude(topic, newsArticles, manualData) {
     if (!ANTHROPIC_API_KEY) {
@@ -175,14 +248,13 @@ async function analyzeNewsWithClaude(topic, newsArticles, manualData) {
 
     const newsContext = newsArticles.length > 0 
         ? `\n\n最新新聞 (${newsArticles.length} 篇):\n${newsArticles.map((article, i) => 
-            `${i + 1}. 【${article.source}】${article.title}\n   ${article.description}\n   來源: ${article.url}`
+            `${i + 1}. 【${article.source}】${article.title}\n   ${article.description}`
           ).join('\n\n')}`
         : '\n\n(未找到最新新聞)';
     
-    // 加入手動提供的資料
     let manualContext = '';
-    if (manualData && manualData[topic.id]) {
-        manualContext = `\n\n手動提供的重要資訊:\n${manualData[topic.id].join('\n')}`;
+    if (manualData && manualData[topic.id] && manualData[topic.id].length > 0) {
+        manualContext = `\n\n手動提供的重要資訊 (${manualData[topic.id].length} 筆):\n${manualData[topic.id].map((item, i) => `${i + 1}. ${item}`).join('\n')}`;
     }
 
     const prompt = `你是電動車產業觀察專家。請分析「${topic.name}」這個主題的重要趨勢。
@@ -192,8 +264,8 @@ ${newsContext}
 ${manualContext}
 
 請提供:
-1. 摘要 (150字內，整合最新新聞、手動資料和產業趨勢)
-2. 5個關鍵重點 (每個50字內，優先基於提供的新聞和資料)
+1. 摘要 (150字內，整合最新新聞、手動資料和產業趨勢，優先使用真實新聞和手動資料的具體內容)
+2. 5個關鍵重點 (每個50字內，必須基於提供的新聞和資料，包含具體案例或數據)
 3. 5個延伸討論問題
 
 請用這個 JSON 格式回應,不要有任何其他文字:
@@ -245,7 +317,6 @@ ${manualContext}
 
     const result = JSON.parse(jsonMatch[0]);
     
-    // 附上新聞來源
     if (newsArticles.length > 0) {
         result.sources = newsArticles.slice(0, 5).map(article => ({
             name: article.title,
@@ -266,22 +337,23 @@ async function fetchRealDigestData() {
     console.log('');
 
     const topics = loadKeywordsConfig();
-    const manualData = loadManualData();
+    const manualData = await loadManualDataFromSheets(); // 從 Google Sheets 載入
     const results = {};
 
     console.log('📋 === 關鍵字設定總覽 ===');
     topics.forEach(topic => {
         console.log(`\n【${topic.name}】 共 ${topic.keywords.length} 個關鍵字:`);
-        topic.keywords.forEach((kw, i) => {
+        topic.keywords.slice(0, 5).forEach((kw, i) => {
             console.log(`  ${i + 1}. "${kw}"`);
         });
+        if (topic.keywords.length > 5) {
+            console.log(`  ... 還有 ${topic.keywords.length - 5} 個關鍵字`);
+        }
     });
     console.log('\n=========================\n');
 
     for (const topic of topics) {
         console.log(`📊 處理主題: ${topic.name}`);
-        console.log(`   準備使用 Google News RSS 搜尋...`);
-        console.log('');
         
         try {
             const newsArticles = await searchNewsWithGoogleRSS(topic);
@@ -290,10 +362,10 @@ async function fetchRealDigestData() {
             if (analysis) {
                 results[topic.id] = analysis;
                 console.log(`✅ ${topic.name} 完成`);
-                console.log(`   📰 共找到 ${newsArticles.length} 篇新聞`);
-                console.log(`   📝 生成 ${analysis.keyPoints.length} 個關鍵重點`);
-                if (analysis.sources && analysis.sources.length > 0) {
-                    console.log(`   🔗 包含 ${analysis.sources.length} 個新聞來源`);
+                console.log(`   📰 新聞: ${newsArticles.length} 篇`);
+                console.log(`   📝 重點: ${analysis.keyPoints.length} 個`);
+                if (manualData && manualData[topic.id]) {
+                    console.log(`   📊 手動資料: ${manualData[topic.id].length} 筆`);
                 }
             }
             console.log('');
@@ -308,15 +380,6 @@ async function fetchRealDigestData() {
             console.log('');
         }
     }
-
-    console.log('\n📊 === 執行統計報告 ===');
-    Object.keys(results).forEach(key => {
-        const topic = topics.find(t => t.id === key);
-        const result = results[key];
-        const sourcesCount = result.sources ? result.sources.length : 0;
-        console.log(`${topic.icon} ${topic.name}: ${sourcesCount} 篇新聞來源`);
-    });
-    console.log('=========================\n');
 
     return results;
 }
@@ -340,15 +403,12 @@ async function sendEmailNotification(digestData) {
     });
 
     const htmlContent = `<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-</head>
+<html><head><meta charset="UTF-8"></head>
 <body style="font-family:-apple-system,sans-serif;background-color:#f5f5f5;padding:20px 0;">
 <table width="600" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;background-color:#ffffff;border-radius:12px;">
 <tr><td style="background:linear-gradient(135deg,#1a73e8 0%,#4285f4 100%);padding:32px 24px;text-align:center;">
 <h1 style="margin:0;font-size:24px;color:#ffffff;">⚡ 電動車生態每日觀察</h1>
-<p style="margin:8px 0 0 0;font-size:14px;color:#ffffff;">📅 ${date} | 🔍 Google News RSS</p>
+<p style="margin:8px 0 0 0;font-size:14px;color:#ffffff;">📅 ${date} | 🔍 Google News + 手動資料</p>
 </td></tr>
 <tr><td style="padding:24px;">
 ${['policy', 'tech', 'business', 'ux'].map(key => {
@@ -362,7 +422,6 @@ ${['policy', 'tech', 'business', 'ux'].map(key => {
 <p style="margin:0;font-size:15px;line-height:1.7;">${topic.summary}</p>
 </div>
 ${topic.keyPoints.map(point => `<p style="margin:6px 0;padding-left:18px;font-size:14px;">• ${point}</p>`).join('')}
-${topic.sources && topic.sources.length > 0 ? `<p style="margin:16px 0 8px 0;font-size:13px;font-weight:600;color:#5f6368;">📰 新聞來源</p>` + topic.sources.slice(0, 3).map(s => `<p style="margin:4px 0;font-size:13px;"><a href="${s.url}" style="color:#1a73e8;">${s.name}</a></p>`).join('') : ''}
 </div>`;
 }).join('')}
 </td></tr>
@@ -370,8 +429,7 @@ ${topic.sources && topic.sources.length > 0 ? `<p style="margin:16px 0 8px 0;fon
 <a href="https://${VERCEL_URL}" style="display:inline-block;padding:14px 32px;background-color:#1a73e8;color:#ffffff;text-decoration:none;border-radius:8px;font-weight:600;">📖 查看完整報告</a>
 </td></tr>
 </table>
-</body>
-</html>`;
+</body></html>`;
 
     const mailOptions = {
         from: `"電動車每日觀察" <${GMAIL_USER}>`,
@@ -381,7 +439,7 @@ ${topic.sources && topic.sources.length > 0 ? `<p style="margin:16px 0 8px 0;fon
     };
 
     try {
-        const info = await transporter.sendMail(mailOptions);
+        await transporter.sendMail(mailOptions);
         console.log('🎉 ✅ Email 發送成功!');
     } catch (error) {
         console.log('❌ Email 發送失敗:', error.message);
@@ -432,7 +490,7 @@ async function generateHTMLReport(data) {
         <header>
             <h1>⚡ 電動車生態每日觀察</h1>
             <p>📅 ${date}</p>
-            <span class="badge">🔍 Google News RSS</span>
+            <span class="badge">🔍 Google News RSS + 手動資料整合</span>
         </header>
         
         ${['policy', 'tech', 'business', 'ux'].map(key => {
@@ -468,7 +526,7 @@ async function main() {
     try {
         console.log('');
         console.log('=== 電動車生態每日觀察系統 ===');
-        console.log('=== 使用 Google News RSS ===');
+        console.log('=== Google News RSS + Google Sheets ===');
         console.log('');
         
         const digestData = await fetchRealDigestData();
