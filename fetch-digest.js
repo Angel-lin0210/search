@@ -16,38 +16,132 @@ console.log('GMAIL_USER:', GMAIL_USER ? '已設定 ✅' : '未設定 ❌');
 console.log('GMAIL_APP_PASSWORD:', GMAIL_APP_PASSWORD ? '已設定 ✅' : '未設定 ❌');
 console.log('RECIPIENT_EMAIL:', RECIPIENT_EMAIL);
 
-// 搜尋真實新聞
+// 載入關鍵字設定檔
+function loadKeywordsConfig() {
+    const configPath = path.join(__dirname, 'keywords-config.json');
+    
+    if (fs.existsSync(configPath)) {
+        console.log('✅ 載入關鍵字設定檔');
+        const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+        console.log(`📋 設定檔版本: ${config.version} (更新於 ${config.lastUpdated})`);
+        return config.topics;
+    } else {
+        console.log('⚠️  未找到設定檔，使用預設關鍵字');
+        return getDefaultTopics();
+    }
+}
+
+// 預設關鍵字（備用）
+function getDefaultTopics() {
+    return [
+        {
+            id: 'policy',
+            name: '政策法規',
+            icon: '📋',
+            keywords: ['台灣 電動車 政策', '電動車 補助', '充電樁 法規']
+        },
+        {
+            id: 'tech',
+            name: '技術發展',
+            icon: '🔬',
+            keywords: ['電動車 技術', '快充 技術', '電池 技術']
+        },
+        {
+            id: 'business',
+            name: '商業模式',
+            icon: '💼',
+            keywords: ['充電站 營運', '充電樁 商業模式']
+        },
+        {
+            id: 'ux',
+            name: '使用者體驗',
+            icon: '👥',
+            keywords: ['電動車 使用體驗', '充電樁 問題']
+        }
+    ];
+}
+
+// 搜尋真實新聞（使用多個關鍵字）
 async function searchNewsForTopic(topic) {
     if (!NEWSAPI_KEY) {
         console.log(`⚠️  未設定 NEWSAPI_KEY，跳過 ${topic.name} 的新聞搜尋`);
         return [];
     }
 
-    console.log(`  🔍 搜尋新聞: ${topic.keywords}`);
+    console.log(`  🔍 開始搜尋 ${topic.keywords.length} 個關鍵字:`);
     
-    const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(topic.keywords)}&language=zh&sortBy=publishedAt&pageSize=5&apiKey=${NEWSAPI_KEY}`;
+    const allArticles = [];
+    const seenUrls = new Set();
+    const searchStats = {};
     
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
+    // 對每個關鍵字進行搜尋
+    for (let i = 0; i < topic.keywords.length; i++) {
+        const keyword = topic.keywords[i];
+        console.log(`     [${i + 1}/${topic.keywords.length}] "${keyword}"`);
         
-        if (data.status === 'ok' && data.articles && data.articles.length > 0) {
-            console.log(`  ✅ 找到 ${data.articles.length} 篇新聞`);
-            return data.articles.map(article => ({
-                title: article.title,
-                description: article.description || '',
-                url: article.url,
-                publishedAt: article.publishedAt,
-                source: article.source.name
-            }));
-        } else {
-            console.log(`  ⚠️  未找到相關新聞`);
-            return [];
+        const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(keyword)}&language=zh&sortBy=publishedAt&pageSize=3&apiKey=${NEWSAPI_KEY}`;
+        
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            if (data.status === 'ok' && data.articles && data.articles.length > 0) {
+                let newArticles = 0;
+                // 去重複
+                data.articles.forEach(article => {
+                    if (!seenUrls.has(article.url)) {
+                        seenUrls.add(article.url);
+                        allArticles.push({
+                            title: article.title,
+                            description: article.description || '',
+                            url: article.url,
+                            publishedAt: article.publishedAt,
+                            source: article.source.name,
+                            keyword: keyword  // 記錄是哪個關鍵字找到的
+                        });
+                        newArticles++;
+                    }
+                });
+                searchStats[keyword] = newArticles;
+                console.log(`        ✅ 找到 ${data.articles.length} 篇，新增 ${newArticles} 篇`);
+            } else {
+                searchStats[keyword] = 0;
+                console.log(`        ⚠️  未找到新聞`);
+            }
+            
+            // 避免超過 NewsAPI 的 rate limit
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+        } catch (error) {
+            searchStats[keyword] = 0;
+            console.error(`        ❌ 搜尋失敗: ${error.message}`);
         }
-    } catch (error) {
-        console.error(`  ❌ 新聞搜尋失敗:`, error.message);
-        return [];
     }
+    
+    // 按發布時間排序，取最新的 10 篇
+    allArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+    const topArticles = allArticles.slice(0, 10);
+    
+    console.log(`\n  📊 搜尋統計:`);
+    console.log(`     總搜尋關鍵字: ${topic.keywords.length} 個`);
+    console.log(`     總找到新聞: ${allArticles.length} 篇`);
+    console.log(`     取用最新: ${topArticles.length} 篇`);
+    
+    // 顯示每個關鍵字的貢獻度
+    const contributingKeywords = Object.entries(searchStats).filter(([k, v]) => v > 0);
+    if (contributingKeywords.length > 0) {
+        console.log(`     有效關鍵字: ${contributingKeywords.length}/${topic.keywords.length}`);
+        console.log(`     最佳關鍵字:`);
+        contributingKeywords
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3)
+            .forEach(([kw, count]) => {
+                console.log(`       • "${kw}": ${count} 篇`);
+            });
+    }
+    console.log('');
+    
+    return topArticles;
 }
 
 // 使用 Claude 分析新聞
@@ -58,32 +152,27 @@ async function analyzeNewsWithClaude(topic, newsArticles) {
     }
 
     const newsContext = newsArticles.length > 0 
-        ? `\n\n最新新聞:\n${newsArticles.map((article, i) => 
-            `${i + 1}. ${article.title}\n   來源: ${article.source}\n   ${article.description}`
+        ? `\n\n最新新聞 (${newsArticles.length} 篇):\n${newsArticles.map((article, i) => 
+            `${i + 1}. 【${article.source}】${article.title}\n   ${article.description}\n   關鍵字: ${article.keyword}`
           ).join('\n\n')}`
         : '\n\n(未找到最新新聞，請基於產業知識分析)';
 
     const prompt = `你是電動車產業觀察專家。請分析「${topic.name}」這個主題的重要趨勢。
 
-關鍵字: ${topic.keywords}
+搜尋範圍: ${topic.keywords.join('、')}
 ${newsContext}
 
 請提供:
-1. 摘要 (100字內，整合最新新聞和產業趨勢)
-2. 5個關鍵重點 (每個30字內，優先使用新聞中的具體事件)
+1. 摘要 (100字內，整合最新新聞和產業趨勢，優先使用新聞中的具體事件)
+2. 5個關鍵重點 (每個30字內，必須基於提供的新聞內容，包含具體案例或數據)
 3. 5個延伸討論問題
-4. 3個資料來源 (優先使用提供的新聞)
+4. 資料來源會自動使用提供的新聞
 
 請用這個 JSON 格式回應,不要有任何其他文字:
 {
   "summary": "摘要內容",
   "keyPoints": ["重點1", "重點2", "重點3", "重點4", "重點5"],
-  "questions": ["問題1", "問題2", "問題3", "問題4", "問題5"],
-  "sources": [
-    {"name": "來源1", "url": "https://example.com/1"},
-    {"name": "來源2", "url": "https://example.com/2"},
-    {"name": "來源3", "url": "https://example.com/3"}
-  ]
+  "questions": ["問題1", "問題2", "問題3", "問題4", "問題5"]
 }`;
 
     console.log('  📤 發送給 Claude 分析...');
@@ -105,11 +194,9 @@ ${newsContext}
         })
     });
 
-    console.log('  API 回應狀態:', response.status, response.statusText);
-
     if (!response.ok) {
         const errorText = await response.text();
-        console.log('  錯誤內容:', errorText);
+        console.log('  ❌ Claude API 失敗:', errorText);
         throw new Error(`Claude API 失敗: ${response.status}`);
     }
 
@@ -125,18 +212,21 @@ ${newsContext}
 
     const jsonMatch = resultText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-        console.log('  無法解析 JSON');
         throw new Error('無法解析 Claude 回應');
     }
 
     const result = JSON.parse(jsonMatch[0]);
     
-    // 如果有真實新聞,優先使用真實新聞作為來源
+    // 使用真實新聞作為來源
     if (newsArticles.length > 0) {
-        result.sources = newsArticles.slice(0, 3).map(article => ({
+        result.sources = newsArticles.slice(0, 5).map(article => ({
             name: article.title,
-            url: article.url
+            url: article.url,
+            source: article.source,
+            publishedAt: article.publishedAt
         }));
+    } else {
+        result.sources = [];
     }
     
     console.log('  ✅ 分析完成');
@@ -147,58 +237,38 @@ async function fetchRealDigestData() {
     console.log('🔍 開始進行真實資料搜集...');
     console.log('');
 
-    const topics = [
-        {
-            id: 'policy',
-            name: '政策法規',
-            icon: '📋',
-            keywords: '台灣 電動車 政策 補助 法規'
-        },
-        {
-            id: 'tech',
-            name: '技術發展',
-            icon: '🔬',
-            keywords: '電動車 技術 快充 電池'
-        },
-        {
-            id: 'business',
-            name: '商業模式',
-            icon: '💼',
-            keywords: '電動車 充電站 營運 商業模式'
-        },
-        {
-            id: 'ux',
-            name: '使用者體驗',
-            icon: '👥',
-            keywords: '電動車 車主 使用 體驗'
-        }
-    ];
-
+    const topics = loadKeywordsConfig();
     const results = {};
+
+    // 顯示所有即將使用的關鍵字
+    console.log('📋 === 關鍵字設定總覽 ===');
+    topics.forEach(topic => {
+        console.log(`\n【${topic.name}】 共 ${topic.keywords.length} 個關鍵字:`);
+        topic.keywords.forEach((kw, i) => {
+            console.log(`  ${i + 1}. "${kw}"`);
+        });
+    });
+    console.log('\n=========================\n');
 
     for (const topic of topics) {
         console.log(`📊 處理主題: ${topic.name}`);
+        console.log(`   準備搜尋 ${topic.keywords.length} 個關鍵字...`);
+        console.log('');
         
         try {
-            // 步驟1: 搜尋真實新聞
             const newsArticles = await searchNewsForTopic(topic);
-            
-            // 步驟2: 讓 Claude 分析新聞
             const analysis = await analyzeNewsWithClaude(topic, newsArticles);
             
             if (analysis) {
                 results[topic.id] = analysis;
                 console.log(`✅ ${topic.name} 完成`);
-            } else {
-                console.log(`⚠️  ${topic.name} 分析失敗，使用備用資料`);
-                results[topic.id] = {
-                    summary: `${topic.name}的最新動態分析暫時無法取得。`,
-                    keyPoints: ['資料更新中', '請稍後查看', '系統維護中'],
-                    questions: ['為什麼會出現這個狀況?'],
-                    sources: []
-                };
+                console.log(`   📰 共找到 ${newsArticles.length} 篇新聞`);
+                console.log(`   📝 生成 ${analysis.keyPoints.length} 個關鍵重點`);
+                console.log(`   💡 提出 ${analysis.questions.length} 個討論問題`);
+                if (analysis.sources && analysis.sources.length > 0) {
+                    console.log(`   🔗 包含 ${analysis.sources.length} 個新聞來源`);
+                }
             }
-            
             console.log('');
         } catch (error) {
             console.error(`❌ ${topic.name} 處理失敗:`, error.message);
@@ -212,6 +282,16 @@ async function fetchRealDigestData() {
         }
     }
 
+    // 執行完成後的統計報告
+    console.log('\n📊 === 執行統計報告 ===');
+    Object.keys(results).forEach(key => {
+        const topic = topics.find(t => t.id === key);
+        const result = results[key];
+        const sourcesCount = result.sources ? result.sources.length : 0;
+        console.log(`${topic.icon} ${topic.name}: ${sourcesCount} 篇新聞來源`);
+    });
+    console.log('=========================\n');
+
     return results;
 }
 
@@ -224,12 +304,7 @@ async function sendEmailNotification(digestData) {
         return;
     }
 
-    console.log('✅ 環境變數檢查通過');
-    
     const date = new Date().toLocaleDateString('zh-TW');
-    console.log('📅 報告日期:', date);
-    
-    console.log('🔧 建立郵件傳送器...');
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -300,8 +375,6 @@ ${topic.sources.slice(0, 3).map(s => `<p style="margin:4px 0;font-size:13px;"><a
         html: htmlContent
     };
 
-    console.log('📤 發送郵件...');
-    
     try {
         const info = await transporter.sendMail(mailOptions);
         console.log('🎉 ✅ Email 發送成功!');
@@ -470,6 +543,11 @@ async function generateHTMLReport(data) {
         .source-link:hover {
             background: #e8f0fe;
         }
+        .source-meta {
+            font-size: 0.8rem;
+            color: #5f6368;
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -507,7 +585,10 @@ async function generateHTMLReport(data) {
             ${topic.sources && topic.sources.length > 0 ? `
             <div class="sources-section">
                 <div class="sources-title">📰 新聞來源</div>
-                ${topic.sources.map(s => `<a href="${s.url}" class="source-link" target="_blank">${s.name}</a>`).join('')}
+                ${topic.sources.map(s => `<a href="${s.url}" class="source-link" target="_blank">
+                    ${s.name}
+                    <div class="source-meta">${s.source} • ${new Date(s.publishedAt).toLocaleDateString('zh-TW')}</div>
+                </a>`).join('')}
             </div>` : ''}
         </div>`;
         }).join('')}
