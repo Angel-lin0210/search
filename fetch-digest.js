@@ -170,15 +170,36 @@ async function searchNewsWithGoogleRSS(topic) {
             
             let newArticles = 0;
             for (const item of items.slice(0, 5)) {
-                const titleMatch = item.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/);
+                // 嘗試多種方式解析標題
+                let title = null;
+                let url = null;
+                let pubDate = null;
+                
+                // 方式1: CDATA 格式
+                let titleMatch = item.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/);
+                if (!titleMatch) {
+                    // 方式2: 普通標題標籤
+                    titleMatch = item.match(/<title>(.*?)<\/title>/);
+                }
+                
                 const linkMatch = item.match(/<link>(.*?)<\/link>/);
                 const pubDateMatch = item.match(/<pubDate>(.*?)<\/pubDate>/);
                 const descMatch = item.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>/);
                 
-                if (titleMatch && linkMatch) {
-                    const title = titleMatch[1];
-                    const url = linkMatch[1];
-                    
+                if (titleMatch) {
+                    title = titleMatch[1];
+                }
+                
+                if (linkMatch) {
+                    url = linkMatch[1];
+                }
+                
+                if (pubDateMatch) {
+                    pubDate = pubDateMatch[1];
+                }
+                
+                // 只要有標題和連結就加入
+                if (title && url) {
                     // 用標題去重,避免同一則新聞重複
                     if (!seenTitles.has(title)) {
                         seenTitles.add(title);
@@ -195,11 +216,16 @@ async function searchNewsWithGoogleRSS(topic) {
                             title: title,
                             description: descMatch ? descMatch[1].replace(/<[^>]*>/g, '').substring(0, 200) : '',
                             url: url,
-                            publishedAt: pubDateMatch ? new Date(pubDateMatch[1]).toISOString() : new Date().toISOString(),
+                            publishedAt: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
                             source: source,
                             keyword: keyword
                         });
                         newArticles++;
+                    }
+                } else {
+                    // 除錯用:顯示無法解析的 item
+                    if (i === 0) {
+                        console.log(`        ⚠️  無法解析 item (標題:${!!title}, 連結:${!!url})`);
                     }
                 }
             }
