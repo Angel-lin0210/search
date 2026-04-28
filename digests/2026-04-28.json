@@ -1,0 +1,78 @@
+{
+  "policy": {
+    "summary": "分析 政策法規 時發生錯誤: API 請求失敗: 404 Not Found - {\"type\":\"error\",\"error\":{\"type\":\"not_found_error\",\"message\":\"model: claude-3-haiku-20240307\"},\"request_id\":\"req_011CaVCQhapwRmSxRadYgwDc\"}",
+    "keyPoints": [
+      "系統發生錯誤",
+      "請檢查 API 設定",
+      "或稍後再試"
+    ],
+    "questions": [
+      "為什麼會發生錯誤?",
+      "API Key 是否正確?",
+      "網路連線是否正常?"
+    ],
+    "sources": [
+      {
+        "name": "系統錯誤",
+        "url": "https://github.com/Angel-lin0210/search"
+      }
+    ]
+  },
+  "tech": {
+    "summary": "分析 技術發展 時發生錯誤: API 請求失敗: 404 Not Found - {\"type\":\"error\",\"error\":{\"type\":\"not_found_error\",\"message\":\"model: claude-3-haiku-20240307\"},\"request_id\":\"req_011CaVCQi84rakJjbSS5A9Nm\"}",
+    "keyPoints": [
+      "系統發生錯誤",
+      "請檢查 API 設定",
+      "或稍後再試"
+    ],
+    "questions": [
+      "為什麼會發生錯誤?",
+      "API Key 是否正確?",
+      "網路連線是否正常?"
+    ],
+    "sources": [
+      {
+        "name": "系統錯誤",
+        "url": "https://github.com/Angel-lin0210/search"
+      }
+    ]
+  },
+  "business": {
+    "summary": "分析 商業模式 時發生錯誤: API 請求失敗: 404 Not Found - {\"type\":\"error\",\"error\":{\"type\":\"not_found_error\",\"message\":\"model: claude-3-haiku-20240307\"},\"request_id\":\"req_011CaVCQiVPuWhVRkAxwfhmf\"}",
+    "keyPoints": [
+      "系統發生錯誤",
+      "請檢查 API 設定",
+      "或稍後再試"
+    ],
+    "questions": [
+      "為什麼會發生錯誤?",
+      "API Key 是否正確?",
+      "網路連線是否正常?"
+    ],
+    "sources": [
+      {
+        "name": "系統錯誤",
+        "url": "https://github.com/Angel-lin0210/search"
+      }
+    ]
+  },
+  "ux": {
+    "summary": "分析 使用者體驗 時發生錯誤: API 請求失敗: 404 Not Found - {\"type\":\"error\",\"error\":{\"type\":\"not_found_error\",\"message\":\"model: claude-3-haiku-20240307\"},\"request_id\":\"req_011CaVCQiiHfezi3zL8gDu5C\"}",
+    "keyPoints": [
+      "系統發生錯誤",
+      "請檢查 API 設定",
+      "或稍後再試"
+    ],
+    "questions": [
+      "為什麼會發生錯誤?",
+      "API Key 是否正確?",
+      "網路連線是否正常?"
+    ],
+    "sources": [
+      {
+        "name": "系統錯誤",
+        "url": "https://github.com/Angel-lin0210/search"
+      }
+    ]
+  }
+}
