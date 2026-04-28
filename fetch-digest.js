@@ -3,7 +3,9 @@ const path = require('path');
 const nodemailer = require('nodemailer');
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-const NEW_API_TOKEN = process.env.NEW_API_TOKEN;
+//const NEW_API_TOKEN = process.env.NEW_API_TOKEN;
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+const NEWSAPI_KEY = process.env.NEWS_API_TOKEN || '6ab04346142a41b4905d4e6c1939cd73';  // 臨時 fallback
 const GMAIL_USER = process.env.GMAIL_USER;
 const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
 const RECIPIENT_EMAIL = process.env.RECIPIENT_EMAIL || process.env.GMAIL_USER;
