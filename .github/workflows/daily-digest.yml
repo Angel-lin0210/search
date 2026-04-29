@@ -1,4 +1,4 @@
-Anam: Daily EV Digest
+name: Daily EV Digest
 
 on:
   schedule:
