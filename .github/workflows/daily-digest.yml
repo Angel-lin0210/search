@@ -2,7 +2,7 @@ name: Daily EV Digest
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '* 23 * * *'
   workflow_dispatch:
 
 jobs:
