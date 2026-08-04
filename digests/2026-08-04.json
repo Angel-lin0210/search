@@ -1,0 +1,198 @@
+{
+  "policy": {
+    "summary": "台灣電動車政策法規正進入關鍵轉型期。2026年政府擴大電動車採購補助至最高50萬元，機車補助最高近6萬元。充電樁安裝法規備受關注，建築技術規則新制推動都更案成本增加最高1,500萬。管委會拒絕住戶安裝充電樁的爭議持續，法院判決趨向保障車位所有權人權益，但共用牆壁仍屬公共財產。苗栗、台南等縣市率先補助公寓大廈充電站設置，最高補助達40-45萬元，政策逐步下沉至社區層級。",
+    "keyPoints": [
+      "政府擴大電動車採購補助：行政院長卓榮泰宣布2026年公告補助辦法，採購電動車最高補助50萬元，補助範圍同步擴大，顯示國家推動電動化的強烈政策意志。",
+      "充電樁建築法規新制衝擊都更成本：大樓充電樁新制上路，專家估算將使都更案成本最高增加1,500萬元，引發建商與開發商對法規配套措施的強烈關切。",
+      "管委會拒裝充電樁爭議明朗化：律師分析法院判決一面倒，車位雖屬個人所有，但牆壁屬共用部分，住戶安裝充電樁須經區分所有權人會議決議，法律邊界逐漸清晰。",
+      "縣市政府率先補助社區充電設施：苗栗縣補助公寓大廈設置汽車充電站每案最高40萬元，台南市5月開跑補助方案最高45萬元，地方政府積極填補中央法規空白。",
+      "台灣車樁比優於歐盟但政策需轉型：台灣電動車車樁比達8比1，優於歐盟標準，然而專家指出充電政策應從「建設數量」轉向「服務治理」，提升充電體驗與使用效率。"
+    ],
+    "questions": [
+      "管委會在充電樁安裝爭議中的法律角色應如何重新定義？現行公寓大廈管理條例是否需要修法，以更明確保障電動車車主的充電權益？",
+      "建築技術規則要求新建大樓預留充電設備，導致都更成本增加1,500萬元，政府應如何透過補貼或容積獎勵平衡法規要求與開發誘因？",
+      "台灣車樁比雖優於歐盟，但充電基礎建設「卡在哪」？從台電申請流程到社區安裝障礙，系統性瓶頸如何透過跨部會協作解決？",
+      "各縣市補助社區充電站的金額與資格各異（苗栗40萬、台南45萬），中央政府是否應建立全國統一補助框架，避免城鄉間電動車使用條件差距擴大？",
+      "隨著電動車補助從機車（最高6萬）到汽車（最高50萬）全面擴大，如何確保補助資源精準投放於真正有需求的族群，而非成為高端消費者的額外福利？"
+    ],
+    "sources": [
+      {
+        "name": "2026全台最新機車補助來了！符合資格1縣市「最高領59300元」，六都加碼金額、 如何申請一次看 - 風傳媒",
+        "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE4wR01PRjQzRmZiaG4tNkZ2aFJyUVYyXzB3enJaWkZ1REdmQWpBTjVLX2JBOWVrck5fc3NEMHlBdUd2QVhZbFZ2UURRZXdpZy1o?oc=5",
+        "source": "Google News",
+        "publishedAt": "2026-07-15T07:00:00.000Z"
+      },
+      {
+        "name": "2026年7月新車促銷總整理，下半年搶客戰開打！CX-5缺席即將大改款？ - cars.tvbs.com.tw",
+        "url": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE0zRzk3NlZQQlJKdmpJbU1CNUowcHhYSHAyVWdmQVhQXzJfcGdfOHBxQ0RCR0hhekozNUE5aDE4Y2VwOHBkUHdIT3BFbW13SHBTUkE?oc=5",
+        "source": "Google News",
+        "publishedAt": "2026-07-10T07:00:00.000Z"
+      },
+      {
+        "name": "苗栗縣即起補助公寓大廈設置汽車充電站 每案最高40萬元 - 客新聞 HakkaNews",
+        "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE1JaWVBV3RLNXlQLTliTjhqdjhlMVpHTDgwa0hNcWFvdU1YUUEtNGd4ODhtdEpaN0pSUzFORU4xRlRqaHhpRnc4SmFMVnE3NEVB?oc=5",
+        "source": "Google News",
+        "publishedAt": "2026-07-06T07:00:00.000Z"
+      },
+      {
+        "name": "想裝充電樁被管委會拒絕？律師：車位是自己的，但牆壁不是！法院判決一面倒 - Yahoo股市",
+        "url": "https://news.google.com/rss/articles/CBMi_wNBVV95cUxNbmVPbmhod0d5RHVKdjJ3azRPMjRycmxHdHhqbGgyc3B2c19RTGlJV1pwMGdoUGlxMjBYbWJKTzFSU0I4NGZ5b0VtYnNhekVDS2JRMmhqMGFOalBvUWE4Tm42NElhVGlUaFdMSFVuRG5UV0hCY2hpOUZ2Q2M2NllTb1U4eTdDUWtYb0xodGxHcmMzODlQcnlKZmNXQ2w1Unk4UG91dE9mWW1PRXF6VVhqSjhDcTc0ZHlOY2Q5c25VNGtfNGZVcjVzWlVKMVFyazYxNFFHcGlIazBvVmpBQlZNS19jMnNjeHZOYnRpYXRBdnBOSE9zcEhBQVVpSjgxUlpxa0JhSjFKeUY2WkFOczBhTVRTRGMxVkxLM1l2YW8yRXVLcTJad2ZCeTRVbnhXSk1scXJxNVdEMlpEbjZDSmhkX0F1Y0NfazU0dWxfR0VRMHpPd0I5SFo2M1RHbzBnZUMxck1PNlNKSlRkUkFpQ0tLTzFmbUdCSWtkVVlPTHhVUDM0X0piRl9mbmVSaTNMS1dKenZZQzVIM3pYOVJTakpWUzNZeTRQUE4wNjdGS1h1bnJibnVqUjdFNTk3UGc0bFNPY3hBcWUwaDNqZnFfLXlHYUZaNi1xTzlFRFhpblFKZzFQWEZNYy1mLUwzanZmcWJxSnJSUzlwelNmNUZCUUVj?oc=5",
+        "source": "Google News",
+        "publishedAt": "2026-07-01T07:00:00.000Z"
+      },
+      {
+        "name": "想裝充電樁被管委會拒絕？律師：車位是自己的，但牆壁不是！法院判決一面倒 - extra.rakuya.com.tw",
+        "url": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE9oUDN6UFdhakhnRkxvVzNRLUNKb2xoN3QyN1lPSmp6ejZMSWNuMHdnUWxKUDZhUVVNY0V2WUV0bkVqM1VERkV4N19aSXR6cHNCcFhpWHIwbmppcmhvUlE?oc=5",
+        "source": "Google News",
+        "publishedAt": "2026-06-30T07:00:00.000Z"
+      }
+    ]
+  },
+  "tech": {
+    "summary": "電動車技術發展正進入多元突破階段。台灣方面，華城電能啟用640kW極速充電站，源點科技EVOASIS登興櫃展現快充商機；台達電則展示微電網與散熱技術。全球層面，Honda押注固態電池並重整電動車戰略，GM與Scania積極推展V2G雙向充電技術，將電動車電池轉化為電網緩衝資源。智慧電網結合AI需求，預估可為全球電力業節省1.8兆美元投資，充電技術正從單純補能演進為能源管理生態系。",
+    "keyPoints": [
+      "超高功率快充突破：華城電能於桃園啟用全台最速640kW極速充電站，大幅縮短補電時間，標誌台灣快充基礎設施進入新量級。",
+      "固態電池戰略重組：Honda宣布押注固態電池並終止AFEELA開發，顯示車廠認為固態電池是下一代電動車續航力突破的關鍵技術路徑。",
+      "V2G雙向充電崛起：GM與Scania同步展示V2G技術，電動車電池可反饋電力至電網，在AI驅動用電需求激增的背景下成為電網緩衝資源。",
+      "台灣充電新創登興櫃：源點科技EVOASIS成台灣首家純充電營運商登興櫃，揭示快充站商業模式成熟，產業資本化進程加速。",
+      "台達電微電網整合技術：台達電展示極致散熱與微電網技術，並推進SST固態變壓器量產，強化台灣在充電基礎設施關鍵零組件的競爭力。"
+    ],
+    "questions": [
+      "640kW超高功率快充站對台灣電網穩定性構成哪些挑戰，現有電力基礎設施是否足以支撐大規模普及？",
+      "Honda放棄純電目標、轉向固態電池策略，是否代表全球車廠對現有鋰電池技術已達瓶頸的集體共識正在形成？",
+      "V2G雙向充電技術在台灣的法規環境與電力市場機制是否已就緒，車主參與電網調度的利益分配模式如何設計？",
+      "源點科技等純充電營運商的商業模式如何在電價波動與設備折舊壓力下維持獲利，快充王的護城河究竟在哪裡？",
+      "AI資料中心與電動車充電需求同步爆發，智慧電網能否有效整合兩者的用電排程，台灣能源管理系統的整合程度是否足夠？"
+    ],
+    "sources": [
+      {
+        "name": "全台最速充電樁降臨桃園！ 華城電能首座640kW 極速充電站正式啟用 - autonet.com.tw",
+        "url": "https://news.google.com/rss/articles/CBMic0FVX3lxTE83YVVkUFJIZmJPV2dnRGdDTWR5TUppam55c0ZKU01icUk2ZUk3UHoxenJkdWpEV1ZGMmhnM2s4U1FqUkx2dWFFUXFSUExZSjVjaV83SDFtQ0xidk5SZU1hd2tueEJlOXdQajhiZklOcUd3WWc?oc=5",
+        "source": "Google News",
+        "publishedAt": "2026-08-02T16:12:51.000Z"
+      },
+      {
+        "name": "Honda押注固態電池！放棄2050純電夢想、終止AFEELA開發，宣示電動車戰略大轉型 - Mashdigi",
+        "url": "https://news.google.com/rss/articles/CBMipgJBVV95cUxPdGFKWWwwekNZYzM1Sk0xTUQyelh3VDlFSjE0VlpVVGFrMFdRYlZXZWJLOGV4M09IZFlSZ1pna2RKUVNBclUzTVB0elFlbVRETWN4MktYVlg3SUZGUlZZNWRodWprUlgtakV1NWZfY3dqZkZQYWVYd1cyVGdyYnZvYjFFSzFLd2xpdjFpVlZQbVNmc0F0LU1TZ25KOUdsYXhubGh3N09ycXRyU3BPS29uV0x3bFdodmVEaU9OQzRGZkNYV0lORENMVmNiSmZTdUJzZDNuT2ViUzItMjdOWjUyb1JZeEZocWM4bE5KTlhjTFljQkVrOWJNTWdETzJGUGlxTV9YOU41RkpoUmlPNnFKQ2M4LUhXa1FuQnhFRGZ3OUs4Y0Y0WVE?oc=5",
+        "source": "Google News",
+        "publishedAt": "2026-08-02T01:02:59.000Z"
+      },
+      {
+        "name": "開電車玩大南投的最佳補電處，全時段每度 6 元超划算！踩點特爾電力「日月町旗艦站」 - DDCAR 電動車",
+        "url": "https://news.google.com/rss/articles/CBMirwRBVV95cUxNNm94UDJhSl9EWXZXZmFOZ21iLU9QSE8xS2RKOGtDUXVtQVJfcjFVY3VvbnBiX1JEVUJqWkpsX3RXMW1PNVRHM25RWXVJTHY0NnlMUTgtbURaZUtCbi1hWmF5Y3ZfeHRGcDBneEdJMEw5SG9xd0VvUVRxdjhZM1BfWVk3a3dES3RhMkxoSGVNUk81NnVjS0N1MWd1UUdsOERtVldVWnREUVVPd1FKZ0pscWFzV2tkYTcweFJ2cXBfcDY1MlFJRC12TzVKUjJrbkFLd3A2bHdQS2hjakRKUHlfZFNyMEpuZ3ROYS1CTVlkaFQwVU8xZ2pvbmFJZ2pFSWFvdjZ2SkJQOTJidVhzQThPX0FYR0RyaGY3X25mYlFPaEt4SU91X0g0VWE1QWhQRWYwb2gzMXkyTk5SSGdJRElZekFfVGpVOXY1ZHVHbWxYdEpaQlRHemJWZnV6NVpBRnEzNUNuMzB6V3BfLWFxMTdPbXV2c2p5WEhOTS04aGdQbF80YzdHQ25xV3JwUUtWb0lZNi1tM0JDRGhuMWZGczdVQmJZd1EzcEdHcUg3Ujl6bTR3My1CTjhCSUFYQmZLek9hX2Q5cktVV1E4M3YxdTdzNkI2bTVIQjZNajVMbGE3Qlpoa2hNRXNWZjFlSDRkdHY1VTBUUlJpaDRNX2pVUjFVVVBSM2x3TFN2R1p3eHZMX1dUNkJBOTVPNE1TaVZZOWZFQmNBVkE3UmJ0Y0I2VjVB?oc=5",
+        "source": "Google News",
+        "publishedAt": "2026-08-01T03:35:00.000Z"
+      },
+      {
+        "name": "星星充電榮膺「微電網品牌TOP1」，定義全球微電網產業新高度- 國際新聞- PChome Online 新聞 - PChome Online 新聞",
+        "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxOMlNhNGlQODVfMkFscGl4dnBzMW9lbDlqVllyRjNkN1BDYWZGenBuVDFVLURxXzV0cjdPei1HdjJFc3U0MkNYbGpyNjg0cElJTDJXT2lZSjUwdlpFY2JCWEl2MXU1WG1KdGljUlFvbE0tZUxrSzVTM0JVLUVKN3VNaG10aExvNXkwOGxN?oc=5",
+        "source": "Google News",
+        "publishedAt": "2026-07-31T12:42:00.000Z"
+      },
+      {
+        "name": "899元便宜無線電競鼠羅技G304內建Hero感應器、搭載Lightspeed無線技術、續航力9個月#電競滑鼠(250451) - Cool3c",
+        "url": "https://news.google.com/rss/articles/CBMiTkFVX3lxTE9rZHNicXMxOVJLenhRbmd6aUN5SU9ZX3ZzUGt2OWZKVUlOM1UxTWtjY19Pc3lZTUFDU09JamZ3N1NINmhXeTJsNVN2X1p5QQ?oc=5",
+        "source": "Google News",
+        "publishedAt": "2026-07-29T12:04:00.000Z"
+      }
+    ]
+  },
+  "business": {
+    "summary": "台灣電動車充電商業模式正快速演進，從單純按度計費走向多元化收費與訂閱制競爭。EVOASIS推出訂閱會員假日每度最低5.25元優惠，引發特斯拉等業者跟進，資費戰正式開打。同時，充電漫遊平台整合（如WiHub）、自主化營運平台（Noodoe）等數位服務崛起。然而市場亦出現華訊電能詐騙案（吸金逾1.9億元），台灣連鎖加盟促進協會已暫停受理充電樁產業參展，顯示商業模式規範化刻不容緩。",
+    "keyPoints": [
+      "【訂閱制價格戰】EVOASIS推出假日訂閱會員每度最低5.25元優惠，特斯拉隨即跟進降價，台灣充電資費戰正式開打，訂閱制成為搶佔用戶黏著度的核心策略。",
+      "【平台整合趨勢】緯謙與好友電合作推出WiHub充電漫遊平台，打通跨業者充電網絡；Noodoe則朝自主化營運平台發展，數位整合成充電商業模式新競爭軸線。",
+      "【詐騙風險警示】華訊電能以投資充電樁綠能為名吸金逾1.9億元，人去樓空，3名主嫌遭聲押；台灣連鎖加盟促進協會宣布暫停充電樁產業參展，揭示投資風險。",
+      "【停車場場域整合】商場與停車場成充電樁佈建主戰場，香港消委會調查18間商場充電收費模式差異顯著；台灣停車場業者亦積極導入充電服務，場域合作成本分攤模式受關注。",
+      "【GM跨界整合案例】GM整合ChargePoint充電網路推出Energy Pass，新增支援8萬座充電樁，顯示車廠主導充電生態系整合的全球趨勢，對台灣在地業者形成競爭壓力。"
+    ],
+    "questions": [
+      "訂閱制充電服務在台灣的用戶接受度如何？業者如何在低價競爭與維持獲利之間取得平衡？",
+      "華訊電能詐騙案暴露充電樁加盟投資的監管漏洞，政府與產業公協會應如何建立更完善的投資保障機制？",
+      "WiHub等充電漫遊平台的崛起，是否將加速台灣充電市場走向平台壟斷？中小型充電業者的生存空間在哪裡？",
+      "停車場業者與充電服務商的場域合作模式，如何合理分配收益與維護成本，才能吸引更多停車場積極導入充電設施？",
+      "面對GM整合ChargePoint等國際車廠主導充電生態系的趨勢，台灣在地充電業者應如何差異化定位，避免被邊緣化？"
+    ],
+    "sources": [
+      {
+        "name": "電動車出行！ 18間商場充電車位、收費及數碼配套全面睇 - 消費者委員會",
+        "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxORUZOd3Z2Mi1TbDZUNlJuQ21IYVU0dmlIQjNVZzdVaE10M0k4NjZScDVBVTEzb01WeDZQYWZfemFSOFNUR3k0djJITUdFbDZGcVl4NXExRlhaOGtael9BaVlyUkdDQXZzUURBd0hRTWYxWE5GSjMwR05sSE1iQldIdWt6SDcxQWlHeE1JZVZ0cFZWYjRTYTVCXw?oc=5",
+        "source": "Google News",
+        "publishedAt": "2026-07-24T02:03:23.000Z"
+      },
+      {
+        "name": "崇德殯儀館旁中賓停車場9月中旬試營運 提供800多個汽機車位 - 自由時報",
+        "url": "https://news.google.com/rss/articles/CBMiZEFVX3lxTFA4UUpZa05VTTFvdUowV080cVJvdU91ZXJnSnJCOE1kS0h5bWZPNFktU0JURDRwT01FUGpkUmVWN0FTS0RGMEJHWTJOMEpJVzZqTlYzSWhpQng2eTRfU0o1OEw5bEHSAWpBVV95cUxQSlQ5WnpkNWVpSUVPYzgtTkdwNWI0dkg0OEttX0lMX1c4WTZzVFFIS1NvUi1sMUdjaW5zNVY5S2p4WWVJdHFRZGJITW50dzRMMjlRVHFiNnR5NXpQTVFOMlduck9DWmVOWE53?oc=5",
+        "source": "Google News",
+        "publishedAt": "2026-07-23T07:00:00.000Z"
+      },
+      {
+        "name": "18商場電動車充電收費一覽 消委會獎賞與收費模式調查一文看清 - hk01.com",
+        "url": "https://news.google.com/rss/articles/CBMivgNBVV95cUxPMHM0UEVnRFc1ZjE5WGcwQlhXWjhVRW5OUE5VS0xPcVBNRFBkX2VxeE8xb29iaWFtUTB4WU5RempQZGtPS3ZMMFdncGM5SjhVdnVxcnA1NkRuTWJib09qNkpWUVNQaFgybTFlUjFrcXJETFlMWUlsTEEybFprMS1IY3d2NWZJcHVpTHYtSThGMWYyWkFWZ1kxN3V1RHJXRVJUdEd5M1NEd3FXQWRUeFBJQnJvbHM3bVJNbklsRnZrMWpmSlpiNXl3UWtReUw1SVBSWEJJRURqWHNTWkZPMEJfa0NsSi1FVDAzZEthSXJKUmJFdXc4bDhac1ViU21vcVFOVXZVTVFreFVGT0pwSVk3M3RSdkJ5TjR6OTRKbnBmREdCOEFDbW9iRXNKWmVHa1ZMTmRpNlVHTm9acmlJRWZrT2ZkVHZLTWtHdWlPaVgwMm03Q1RoTklBa3R6aFZSWld0TmM5SE1tRWR2elFVdEk2T2hCZTltTVhfVzUzUFpXV2dLN1ktV3poeFA4VjN1aFA0UXduWnQ4YXozeXBXYVBkUVBpcXZrUGtxWDJvcTRzQTNCVDNoZWR3eXh3Yl9kdw?oc=5",
+        "source": "Google News",
+        "publishedAt": "2026-07-23T07:00:00.000Z"
+      },
+      {
+        "name": "消委會 ‧ 電動車充電位︱18商場僅兩新商場充電車位達100% 一文睇清收費模式及配套 附六大充電貼士 - singtao.ca",
+        "url": "https://news.google.com/rss/articles/CBMi2ARBVV95cUxNUDBhNF9WZEN5Uld5WGxUZnczUlVXNDJrcXZxYy1wcEliaFdCMlNNNmtEMzFodF9vMGJnNmhkZ0pldk92Mm1DNld2akpKNXVycmVwdUxrTTd0ZVpiaWUzSlE4WWV6QzhIWTVJa2JpZ0JrTmMwaUl3Y0lLOVQxa0pOZGNkd3RaN08tcWxMdHc0QXdlV2oyVV9fS1MzLVd3a0ItcFFjVXRvMmlpQ0dzNU9VOWFTa2dPY1l6X3FnaFJTckgzdzBNT3ZYTDZZRGNsTTdJeVFMT0xzRW45am5TTkpYY0FNRU1hNFhiMTM1QWt6dDdybjl2dnBmaGtDSVBlZ3psbFFXMXZKb21fZEtnX0pYVThrY3VFclNJREhRdXJQcFRQYUFzV2lTdk55c1F4RjB1czNEUzBYNzNyZFFUSUdGaWZxMTlXc1oyaUhZd3o3STNxdThBYXJjTFVDNDM0b3FIckZQdnJaRnhXZDBtWDI3RndqX2JFemhfTDMtQll1cnU5QUVPTTlsQU9ITFQ1ZERnRUlSYXc2MlktQWkxZXdJelktUTVURFZTb1c5ZXFFd3lIU2Z2ZloyQ2ttLXlyR2syOWlodzBJVzkzeUVrbk5zSmFIcUJRZXZsZTU0R1Nublo1YlF5cUxlWndjZjIzbVhaU0VqV3FCS2NmMmdwOTNuM3kzeHIyb1h6RF9IQ2N1QmVxdU1JTW9Rb1VWMmR0TnVhRldyTFcyQkwxUExwNGZhUzhVOUtvMVE3eFQteEhVeWtQVzhTeG9BaWdIb1FyenRoNnZTVl8zTU_SAYwBQVVfeXFMT1d4VkZEaU44WWZ3ZkljbWlFNnlCckZIUFpMTDJ2YWwyVVI3QWJjcWZxa0NxNmdoYWVHamZwMzZEOHROX2JKM1RKazE4eFhnRkJILXhaRm0wWURLbkVjSkg3emNxSDliOXB0aF9qM0JhR3dtZFlfZkNsZWVlWmttbEhhQ3ZNakg2Q050alo?oc=5",
+        "source": "Google News",
+        "publishedAt": "2026-07-23T05:46:04.000Z"
+      },
+      {
+        "name": "GM整合ChargePoint充電網路Energy Pass新增8萬座充電樁支援- 科技新聞- PChome Online 新聞 - PChome Online 新聞",
+        "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPd2hZbUhMWTFXNjBkU25qMUFBd0dLemtsdkh5Uk1vUnF1SS13MjlLQlZtMHhJeWstT0FUT1lkWDFZazJadmNaaDFrYTJ6Qi1yMWhnS0c3R0dvWnJ3ZThqLWFXck95cXZQSmJnUHNOSXJ1ZkJaOTJOTUxyOVVHS0NJM2ZoQUJ6NWxia2lwaw?oc=5",
+        "source": "Google News",
+        "publishedAt": "2026-07-22T07:00:00.000Z"
+      }
+    ]
+  },
+  "ux": {
+    "summary": "台灣電動車使用者體驗面臨多重挑戰：充電基礎建設不足，公視《獨立特派員》專題揭露充電困擾普遍存在；政府停車場充電樁平均使用率僅12%，顯示布點與需求錯配。社區充電衍生「偷充別人家電」、管委會糾紛等倫理問題；醫院更因火災安全疑慮禁止電動車進入室內停車場。冬季低溫影響續航與充電效率，加拿大調查顯示逾五成民眾因此卻步購車。整體而言，硬體、軟體與人際摩擦三重障礙，正考驗電動車普及化的最後一哩路。",
+    "keyPoints": [
+      "充電基礎建設嚴重不足：台灣預計2040年達成運具電動化目標，但公視報導指出充電建設普及程度仍待強化，布點不均導致車主找站困難。",
+      "公共充電樁使用率極低：香港政府停車場充電樁平均使用率僅12%，反映選址規劃失當，有效資源閒置與車主實際需求脫節的矛盾。",
+      "社區充電引發人際糾紛：「偷充別人家電」問題在社區大樓蔓延，加上管委會因充電樁設置起爭議，甚至出現刪除住戶門禁逼人搬家的極端案例。",
+      "安全疑慮限制使用場域：電動車電池火災難以疏散，醫院已明令禁止電動車進入室內停車場，充電樁安全規範與場地限制成為體驗痛點。",
+      "低溫與季節性能耗問題：冬季低溫顯著影響電動車充電速度與續航里程，Kia EV6特別提示低溫充電技巧，加拿大逾五成民眾因此不願購買電動車。"
+    ],
+    "questions": [
+      "台灣社區大樓「偷充電」糾紛頻傳，現行法規與管委會規章是否足以有效規範，應如何建立公平的電費分攤與使用稽核機制？",
+      "政府停車場充電樁使用率僅12%，問題根源究竟是選址錯誤、收費不合理，還是宣傳不足？如何改善公共充電資源的配置效率？",
+      "醫院、地下停車場等場所因安全疑慮限制電動車進入，這樣的限制是否合理？電池安全技術需達到什麼標準才能解除管制？",
+      "冬季低溫對電動車充電效率與續航的影響，是否會成為台灣北部與高山地區推廣電動車的長期障礙？業者應提供哪些配套解方？",
+      "充電App體驗不佳、充電站難找等軟體層面的問題，是否應由政府主導建立統一平台標準，還是交由市場競爭自然整合？"
+    ],
+    "sources": [
+      {
+        "name": "全台最速充電樁降臨桃園！ 華城電能首座640kW 極速充電站正式啟用 - autonet.com.tw",
+        "url": "https://news.google.com/rss/articles/CBMic0FVX3lxTE83YVVkUFJIZmJPV2dnRGdDTWR5TUppam55c0ZKU01icUk2ZUk3UHoxenJkdWpEV1ZGMmhnM2s4U1FqUkx2dWFFUXFSUExZSjVjaV83SDFtQ0xidk5SZU1hd2tueEJlOXdQajhiZklOcUd3WWc?oc=5",
+        "source": "Google News",
+        "publishedAt": "2026-08-02T16:12:51.000Z"
+      },
+      {
+        "name": "陸新能源車帶動新職業崛起維修電池充電樁人才需求大增 - 中時新聞網",
+        "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE1IeFlIcWZJVkx1Q3g0VWFtd00xNFJtS0lRVEJ5QWxzVUxuOEdFMWJpOWhJLWpNUUx5RC1jV0sweWo0Z3VqT182Y09vMlI2d3Y3TkVGWkxad3Z1MHVTUEVxcDI5NEhyMWhNdWlIRTVB?oc=5",
+        "source": "Google News",
+        "publishedAt": "2026-07-31T04:42:08.000Z"
+      },
+      {
+        "name": "開電動車有訣竅！Kia EV6低溫能耗與充電小撇步 - U-CAR試車",
+        "url": "https://news.google.com/rss/articles/CBMi7gFBVV95cUxPblJIR2gtY0JHQ1VJR1oybWt4MExtN25hWXpBUXB4ZV9sT2xuS2dOWndoRlVELUVYTEplUGhhTjJxdE9Ha3JkdDd0SHdhOTVYeXdFX3hRYW9KT1p5SE5Uc0lNM2ZHdWtFcWd3VXFMUTJNblFuYy1sdFJBUHRVN1FFUFFGYlFYQWg0eGhGei1YRVRFOW1sLVZJbWt5VF9OSzJqVzFKbXNqT005TGRVRk9PbGFTQy1TNjB5dnItWTNpbVRpczRCQjM1dk8wVDhKUC0xQklUeFB6OEVBcHY5Ny13U3JFZWtESTdyWE51ZjhB?oc=5",
+        "source": "Google News",
+        "publishedAt": "2026-07-25T06:54:09.000Z"
+      },
+      {
+        "name": "EVALUE APP 再升級，推出車主旅程規劃、徽章任務等功能開啟充電新體驗 - DDCAR 電動車",
+        "url": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE1DcURvbGhfSklmckhLVGtWSUV4NDBweTJucWRJMDd3TEVPcWVLU1ptYnBwZ0R3SDJrb0swZWttMThRSzVYX3N3UWk2WnZ3YWM?oc=5",
+        "source": "Google News",
+        "publishedAt": "2026-07-24T16:18:57.000Z"
+      },
+      {
+        "name": "泰國 OR 提出 2030 永續目標，從加油站、咖啡到電動車充電推動能源轉型 - 三嘻行動哇 Yipee!",
+        "url": "https://news.google.com/rss/articles/CBMiywJBVV95cUxQVWZQSlFIN05NQnAwV2pwTThXbFBRZm1TOXNJU0JGUkZQdXhTUVQ5ZW5wTUl2aUlkaEIzS3Qta1Z0OS0zT2RMbno4LUF5WGFhMmZwWFlvQTRZekZaMW9FU29YNjNpVWtoZjItSUNCeHJTRDBJdkxjV0M1M2JwTm51bHNsVlRlN0RITHRKcC03VzdxNE5QNExTSE1aUENKeEwwcEtUZG1FU2FsZ3BUUTVhMTlTTmV5YU9wZ01xU3BSNnFreG1LV0VSN2hwZF9BT1Y4eHltNlFBRUl3X1lkZ3RNOGcwLV9WTS0xZ1ZzZElzYmRpMHFEMHNtcE5UWExRNlR5aF9MTFhMbGtFVTBmbUxBR292LUZIVHRSc2FlellHZXFxdzljeW9pQXdnTjNKV1kzNzIzbGxraEJGdEtwMEo2SkpKdzduNTRGRWtZ?oc=5",
+        "source": "Google News",
+        "publishedAt": "2026-07-02T07:00:00.000Z"
+      }
+    ]
+  }
+}
