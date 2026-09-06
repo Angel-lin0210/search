@@ -1,0 +1,46 @@
+{
+  "policy": {
+    "summary": "處理 政策法規 時發生錯誤。",
+    "keyPoints": [
+      "系統錯誤",
+      "請稍後再試"
+    ],
+    "questions": [
+      "發生了什麼問題?"
+    ],
+    "sources": []
+  },
+  "tech": {
+    "summary": "處理 技術發展 時發生錯誤。",
+    "keyPoints": [
+      "系統錯誤",
+      "請稍後再試"
+    ],
+    "questions": [
+      "發生了什麼問題?"
+    ],
+    "sources": []
+  },
+  "business": {
+    "summary": "處理 商業模式 時發生錯誤。",
+    "keyPoints": [
+      "系統錯誤",
+      "請稍後再試"
+    ],
+    "questions": [
+      "發生了什麼問題?"
+    ],
+    "sources": []
+  },
+  "ux": {
+    "summary": "處理 使用者體驗 時發生錯誤。",
+    "keyPoints": [
+      "系統錯誤",
+      "請稍後再試"
+    ],
+    "questions": [
+      "發生了什麼問題?"
+    ],
+    "sources": []
+  }
+}
